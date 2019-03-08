@@ -23,6 +23,7 @@
   "homepage": "https://github.com/tecpet/api#readme",
   "dependencies": {
     "apollo-boost": "^0.3.1",
+    "apollo-cache-inmemory": "^1.5.1",
     "apollo-link-context": "^1.0.15",
     "apollo-link-http": "^1.5.12",
     "cross-fetch": "^3.0.1",
