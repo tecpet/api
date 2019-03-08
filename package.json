@@ -20,5 +20,12 @@
   "bugs": {
     "url": "https://github.com/tecpet/api/issues"
   },
-  "homepage": "https://github.com/tecpet/api#readme"
+  "homepage": "https://github.com/tecpet/api#readme",
+  "dependencies": {
+    "apollo-boost": "^0.3.1",
+    "apollo-link-context": "^1.0.15",
+    "cross-fetch": "^3.0.1",
+    "graphql": "^14.1.1",
+    "graphql-tag": "^2.10.1"
+  }
 }
