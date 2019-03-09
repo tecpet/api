@@ -11,4 +11,4 @@ API calls and usage description for the tecpet platform
 # Usage
 
     var api = require("@tecpet/api")
-    api.getShopGeneralInfo().then(a => {console.log(a)});
+    api.getShopGeneralInfo().then(result => {console.log(result)});
