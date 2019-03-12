@@ -48,7 +48,6 @@ const getServiceCategoriesWithServices = gql`
 const getTimeTable = gql`
     query segment($type: ShopSegment!) {
         segment (type: $type) {
-            type
             timeTable{
                 fullTime
                 monday{
@@ -112,7 +111,7 @@ const getTimeTable = gql`
     }
 `;
 
-const getGeneralInfo = gql`
+const getShopGeneralInfo = gql`
     query getGeneralInfo {
         getShopGeneralInfo {
             name
@@ -141,16 +140,19 @@ function json(response) {
 }
 
 exports.login = function (login,password) {
+// function login(user,password) {
     return new Promise(function(resolve, reject) {
         fetch('http://tecpet-api-dev.sa-east-1.elasticbeanstalk.com/auth/login', {
             method: "POST",
-            body: JSON.stringify({"login": login, "password": password}),
+            body: JSON.stringify({"login": user, "password": password}),
             headers: {
                 "Content-Type": "application/json"
             },
         }).then(json)
             .then(function (data) {
-                // console.log('Request succeeded with JSON response', data);
+                if(data.status && data.status == 401){
+                    reject(data);
+                }
                 resolve(data);
             })
             .catch(function (error) {
@@ -196,7 +198,7 @@ exports.getSegments = function (token) {
 exports.loadShopGeneralInfo = function (token) {
     return new Promise(function(resolve, reject) {
         client.query({
-            query:getGeneralInfo,
+            query:getShopGeneralInfo,
             context: {
                 // example of setting the headers with context per operation
                 headers: {
@@ -232,7 +234,7 @@ exports.loadTimeTables = function (token,segmentType) {
         })
             .then(result => {
                 // console.log(result.data);
-                resolve(result.data); // does not have field data.getTimeTable
+                resolve(result.data.getSegments); // does not have field data.getTimeTable
             })
             .catch(error => {
                 // console.error('error',error);
@@ -294,5 +296,5 @@ exports.loadChecklists = function (token,segmentType) {
 // loadTimeTables(token,"PET_SHOP");
 // loadSegments(token);
 // loadCategoriesWithServices(token,"PET_SHOP");
-
+// login('','').then(result => console.log('Login',result)).catch(e=>console.log("ERROR",e));
 // loadChecklists(token,"PET_SHOP");
