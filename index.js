@@ -5,6 +5,113 @@ const createHttpLink = require('apollo-link-http').createHttpLink;
 const InMemoryCache = require('apollo-cache-inmemory').InMemoryCache;
 const setContext = require('apollo-link-context').setContext;
 
+const getChecklists = gql`
+    query getChecklists($segmentType: ShopSegment!) {
+        getChecklists(segmentType: $segmentType) {
+            id
+            name
+            items{
+                id
+                name
+                itemType
+                options
+            }
+        }
+    }
+`;
+
+const getServiceCategoriesWithServices = gql`
+    query getServiceCategoriesWithServices($segmentType: ShopSegment!){
+        getServiceCategoriesWithServices(segmentType: $segmentType) {
+#            type -> Returning Null
+            name
+#            capacity  -> giving error
+            services{
+                id
+                name
+                priceTable{
+                    price
+                    duration
+                    hairItemType
+                    sizeItemType
+                }
+                species{
+                    CAT
+                    DOG
+                }
+                segmentType
+                serviceCategoryType
+            }
+        }
+    }
+`;
+const getTimeTable = gql`
+    query segment($type: ShopSegment!) {
+        segment (type: $type) {
+            type
+            timeTable{
+                fullTime
+                monday{
+                    closed
+                    hasPause
+                    start
+                    stop
+                    pauseStop
+                    pauseStart
+                }
+                tuesday{
+                    closed
+                    hasPause
+                    start
+                    stop
+                    pauseStop
+                    pauseStart
+                }
+                wednesday{
+                    closed
+                    hasPause
+                    start
+                    stop
+                    pauseStop
+                    pauseStart
+                }
+                thursday{
+                    closed
+                    hasPause
+                    start
+                    stop
+                    pauseStop
+                    pauseStart
+                }
+                friday{
+                    closed
+                    hasPause
+                    start
+                    stop
+                    pauseStop
+                    pauseStart
+                }
+                saturday{
+                    closed
+                    hasPause
+                    start
+                    stop
+                    pauseStop
+                    pauseStart
+                }
+                sunday{
+                    closed
+                    hasPause
+                    start
+                    stop
+                    pauseStop
+                    pauseStart
+                }
+            }
+        }
+    }
+`;
+
 const getGeneralInfo = gql`
     query getGeneralInfo {
         getShopGeneralInfo {
@@ -42,14 +149,14 @@ exports.login = function (login,password) {
                 "Content-Type": "application/json"
             },
         }).then(json)
-        .then(function (data) {
-            // console.log('Request succeeded with JSON response', data);
-            resolve(data);
-        })
-        .catch(function (error) {
-            // console.log('Request failed', error);
-            reject(error);
-        });
+            .then(function (data) {
+                // console.log('Request succeeded with JSON response', data);
+                resolve(data);
+            })
+            .catch(function (error) {
+                // console.log('Request failed', error);
+                reject(error);
+            });
     });
 };
 
@@ -77,6 +184,7 @@ exports.getSegments = function (token) {
             }
         })
             .then(result => {
+                console.log(result.data.getSegments);
                 resolve(result.data.getSegments);
             })
             .catch(error => {
@@ -85,8 +193,7 @@ exports.getSegments = function (token) {
     });
 };
 
-
-exports.getShopGeneralInfo = function (token) {
+exports.loadShopGeneralInfo = function (token) {
     return new Promise(function(resolve, reject) {
         client.query({
             query:getGeneralInfo,
@@ -97,13 +204,95 @@ exports.getShopGeneralInfo = function (token) {
                 }
             }
         })
-        .then(result => {
-            // console.log(result.data.getShopGeneralInfo);
-            resolve(result.data.getShopGeneralInfo);
-        })
-        .catch(error => {
-            // console.error('error',error)
-            reject(error);
-        });
+            .then(result => {
+                // console.log(result.data.getShopGeneralInfo);
+                resolve(result.data.getShopGeneralInfo);
+            })
+            .catch(error => {
+                // console.error('error',error)
+                reject(error);
+            });
     });
 };
+
+// function loadTimeTables(token,segmentType) {
+exports.loadTimeTables = function (token,segmentType) {
+    return new Promise(function(resolve, reject) {
+        client.query({
+            query:getTimeTable,
+            context: {
+                // example of setting the headers with context per operation
+                headers: {
+                    authorization: token ? `Bearer ${token}` : "",
+                }
+            },
+            variables: {
+                type: segmentType,
+            }
+        })
+            .then(result => {
+                // console.log(result.data);
+                resolve(result.data); // does not have field data.getTimeTable
+            })
+            .catch(error => {
+                // console.error('error',error);
+                reject(error);
+            });
+    });
+};
+
+// function loadCategoriesWithServices(token,segmentType) {
+exports.loadCategoriesWithServices = function (token,segmentType) {
+    return new Promise(function(resolve, reject) {
+        client.query({
+            query:getServiceCategoriesWithServices,
+            context: {
+                // example of setting the headers with context per operation
+                headers: {
+                    authorization: token ? `Bearer ${token}` : "",
+                }
+            },
+            variables: {
+                segmentType: segmentType,
+            }
+        }).then(result => {
+                // console.log(result.data.getServiceCategoriesWithServices);
+                resolve(result.data.getServiceCategoriesWithServices);
+            })
+            .catch(error => {
+                // console.error('error',error);
+                reject(error);
+            });
+    });
+};
+
+exports.loadChecklists = function (token,segmentType) {
+// function loadChecklists(token,segmentType) {
+    return new Promise(function(resolve, reject) {
+        client.query({
+            query:getChecklists,
+            context: {
+                // example of setting the headers with context per operation
+                headers: {
+                    authorization: token ? `Bearer ${token}` : "",
+                }
+            },
+            variables: {
+                segmentType: segmentType,
+            }
+        }).then(result => {
+            console.log(result.data.getChecklists);
+            resolve(result.data.getChecklists);
+        })
+            .catch(error => {
+                // console.error('error',error);
+                reject(error);
+            });
+    });
+};
+
+// loadTimeTables(token,"PET_SHOP");
+// loadSegments(token);
+// loadCategoriesWithServices(token,"PET_SHOP");
+
+// loadChecklists(token,"PET_SHOP");
