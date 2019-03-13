@@ -139,7 +139,7 @@ function json(response) {
     return response.json()
 }
 
-exports.login = function (login,password) {
+exports.login = function (user,password) {
 // function login(user,password) {
     return new Promise(function(resolve, reject) {
         fetch('http://tecpet-api-dev.sa-east-1.elasticbeanstalk.com/auth/login', {
