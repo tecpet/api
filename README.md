@@ -1,4 +1,4 @@
-![tecpet-api](https://img.shields.io/badge/npm%20package-1.0.4-brightgreen.svg)
+![tecpet-api](https://img.shields.io/badge/npm%20package-1.0.6-brightgreen.svg)
 
 # tecpet-api
 API calls and usage description for the tecpet platform
@@ -18,12 +18,39 @@ Next, api.login()response has the authentication token necessary for the next AP
 
 Pass the user authentication parameters and save the token for the future API calls:
 
-    const token;
     api.login("Marcus","MarcusPassword").then(result => {   
         console.log(result) 
-        this.token = result.accessToken
     });
     
 Pass the token on future API calls as a parameter:
 
     api.getShopGeneralInfo(token).then(result => {console.log(result)});
+    
+# API functions calls
+1. Get Shop General Info
+- token: Authentication Token from Login
+
+        api.loadShopGeneralInfo(token).then(result => {console.log(result)});
+       
+2. Get Shop Segments
+- token: Authentication Token from Login
+
+        api.getSegments(token).then(result => {console.log(result)});
+        
+3. Load Timetable, days and hours open, including breaks, for each segment.
+- token: Authentication Token from Login
+- segmentType: ENUM 'PET_SHOP', 'CLINIC', 'DAY_CARE', 'HOTEL'.
+
+        api.loadTimeTables(token,segmentType).then(result => {console.log(result)});
+        
+4. Load Categories for each segment with the services that exist for each category
+- token: Authentication Token from Login
+- segmentType: ENUM 'PET_SHOP', 'CLINIC', 'DAY_CARE', 'HOTEL'.
+
+        api.loadCategoriesWithServices(token,segmentType).then(result => {console.log(result)});
+        
+5. Load Checklists for segments
+- token: Authentication Token from Login
+- segmentType: ENUM 'PET_SHOP', 'CLINIC', 'DAY_CARE', 'HOTEL'.
+
+        api.loadChecklists(token,segmentType).then(result => {console.log(result)});
