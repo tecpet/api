@@ -34,23 +34,18 @@ Pass the token on future API calls as a parameter:
        
 2. Get Shop Segments
 - token: Authentication Token from Login
+- segmentType: ENUM 'PET_SHOP', 'CLINIC', 'DAY_CARE', 'HOTEL'.
 
         api.getSegments(token).then(result => {console.log(result)});
         
 3. Load Timetable, days and hours open, including breaks, for each segment.
-- token: Authentication Token from Login
-- segmentType: ENUM 'PET_SHOP', 'CLINIC', 'DAY_CARE', 'HOTEL'.
 
         api.loadTimeTables(token,segmentType).then(result => {console.log(result)});
         
 4. Load Categories for each segment with the services that exist for each category
-- token: Authentication Token from Login
-- segmentType: ENUM 'PET_SHOP', 'CLINIC', 'DAY_CARE', 'HOTEL'.
 
         api.loadCategoriesWithServices(token,segmentType).then(result => {console.log(result)});
         
 5. Load Checklists for segments
-- token: Authentication Token from Login
-- segmentType: ENUM 'PET_SHOP', 'CLINIC', 'DAY_CARE', 'HOTEL'.
 
         api.loadChecklists(token,segmentType).then(result => {console.log(result)});
