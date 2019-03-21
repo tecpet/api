@@ -5,6 +5,24 @@ const createHttpLink = require('apollo-link-http').createHttpLink;
 const InMemoryCache = require('apollo-cache-inmemory').InMemoryCache;
 const setContext = require('apollo-link-context').setContext;
 
+const getBillingMethods = gql`
+    query getBillingMethods( $type: ShopSegment!) {
+        getBillingMethods (type: $type) {
+            name
+            tag
+            active
+            billingItems{
+                name
+                tag
+                active
+                min
+                max
+                description
+            }
+        }
+    }
+`;
+
 const getChecklists = gql`
     query getChecklists($segmentType: ShopSegment!) {
         getChecklists(segmentType: $segmentType) {
@@ -140,7 +158,7 @@ function json(response) {
 }
 
 exports.login = function (user,password) {
-// function login(user,password) {
+//function login(user,password) {
     return new Promise(function(resolve, reject) {
         fetch('http://tecpet-api-dev.sa-east-1.elasticbeanstalk.com/auth/login', {
             method: "POST",
@@ -234,7 +252,7 @@ exports.loadTimeTables = function (token,segmentType) {
         })
             .then(result => {
                 // console.log(result.data);
-                resolve(result.data.getSegments); // does not have field data.getTimeTable
+                resolve(result.data.getSegments);
             })
             .catch(error => {
                 // console.error('error',error);
@@ -283,7 +301,7 @@ exports.loadChecklists = function (token,segmentType) {
                 segmentType: segmentType,
             }
         }).then(result => {
-            console.log(result.data.getChecklists);
+            //console.log(result.data.getChecklists);
             resolve(result.data.getChecklists);
         })
             .catch(error => {
@@ -292,9 +310,33 @@ exports.loadChecklists = function (token,segmentType) {
             });
     });
 };
-
+//
+exports.loadBillingMethods = function (token,segmentType) {
+//function loadBillingMethods(token,segmentType) {
+    return new Promise(function(resolve, reject) {
+        client.query({
+            query:getBillingMethods,
+            context: {
+                // example of setting the headers with context per operation
+                headers: {
+                    authorization: token ? `Bearer ${token}` : "",
+                }
+            },
+            variables: {
+                type: segmentType,
+            }
+        }).then(result => {
+            console.log(result.data.getBillingMethods);
+            resolve(result.data.getBillingMethods);
+        })
+            .catch(error => {
+                console.error('error',error);
+                reject(error);
+            });
+    });
+};
 // loadTimeTables(token,"PET_SHOP");
-// loadSegments(token);
+//loadBillingMethods(token,"PET_SHOP");
 // loadCategoriesWithServices(token,"PET_SHOP");
-// login('','').then(result => console.log('Login',result)).catch(e=>console.log("ERROR",e));
+//login('','').then(result => console.log('Login',result)).catch(e=>console.log("ERROR",e));
 // loadChecklists(token,"PET_SHOP");
