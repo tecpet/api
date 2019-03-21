@@ -29,12 +29,11 @@ Pass the token on future API calls as a parameter:
 # API functions calls
 1. Get Shop General Info
 - token: Authentication Token from Login
+- segmentType: ENUM 'PET_SHOP', 'CLINIC', 'DAY_CARE', 'HOTEL'.
 
         api.loadShopGeneralInfo(token).then(result => {console.log(result)});
        
 2. Get Shop Segments
-- token: Authentication Token from Login
-- segmentType: ENUM 'PET_SHOP', 'CLINIC', 'DAY_CARE', 'HOTEL'.
 
         api.getSegments(token).then(result => {console.log(result)});
         
