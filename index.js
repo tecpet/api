@@ -4,7 +4,38 @@ const fetch = require('cross-fetch');
 const createHttpLink = require('apollo-link-http').createHttpLink;
 const InMemoryCache = require('apollo-cache-inmemory').InMemoryCache;
 const setContext = require('apollo-link-context').setContext;
+const cep = require('cep-promise');
 
+const createClient = gql`
+    mutation createClient($clientInput: ClientInput!) {
+        createClient(clientInput: $clientInput) {
+            id
+        }
+    }
+`;
+
+const editClient = gql`
+    mutation editClient( $id: ID!, $clientInput: ClientInput!) {
+        editClient(id: $id, clientInput: $clientInput) {
+            id
+        }
+    }
+`;
+
+const editPet = gql`
+    mutation editPet($client: ID!,$id: ID!, $petInput: PetInput!) {
+        editPet(client: $client, id:$id, petInput: $petInput ) {
+            id
+        }
+    }
+`;
+const createPet = gql`
+    mutation createPet($client: ID!,$petInput: PetInput!) {
+        createPet(client: $client, petInput:$petInput ) {
+            id
+        }
+    }
+`;
 const getBillingMethods = gql`
     query getBillingMethods( $type: ShopSegment!) {
         getBillingMethods (type: $type) {
@@ -41,9 +72,9 @@ const getChecklists = gql`
 const getServiceCategoriesWithServices = gql`
     query getServiceCategoriesWithServices($segmentType: ShopSegment!){
         getServiceCategoriesWithServices(segmentType: $segmentType) {
-#            type -> Returning Null
+            #            type -> Returning Null
             name
-#            capacity  -> giving error
+            #            capacity  -> giving error
             services{
                 id
                 name
@@ -197,7 +228,6 @@ exports.getSegments = function (token) {
         client.query({
             query:getSegments,
             context: {
-                // example of setting the headers with context per operation
                 headers: {
                     authorization: token ? `Bearer ${token}` : "",
                 }
@@ -218,7 +248,6 @@ exports.loadShopGeneralInfo = function (token) {
         client.query({
             query:getShopGeneralInfo,
             context: {
-                // example of setting the headers with context per operation
                 headers: {
                     authorization: token ? `Bearer ${token}` : "",
                 }
@@ -241,7 +270,6 @@ exports.loadTimeTables = function (token,segmentType) {
         client.query({
             query:getTimeTable,
             context: {
-                // example of setting the headers with context per operation
                 headers: {
                     authorization: token ? `Bearer ${token}` : "",
                 }
@@ -267,7 +295,6 @@ exports.loadCategoriesWithServices = function (token,segmentType) {
         client.query({
             query:getServiceCategoriesWithServices,
             context: {
-                // example of setting the headers with context per operation
                 headers: {
                     authorization: token ? `Bearer ${token}` : "",
                 }
@@ -276,9 +303,9 @@ exports.loadCategoriesWithServices = function (token,segmentType) {
                 segmentType: segmentType,
             }
         }).then(result => {
-                // console.log(result.data.getServiceCategoriesWithServices);
-                resolve(result.data.getServiceCategoriesWithServices);
-            })
+            // console.log(result.data.getServiceCategoriesWithServices);
+            resolve(result.data.getServiceCategoriesWithServices);
+        })
             .catch(error => {
                 // console.error('error',error);
                 reject(error);
@@ -292,7 +319,6 @@ exports.loadChecklists = function (token,segmentType) {
         client.query({
             query:getChecklists,
             context: {
-                // example of setting the headers with context per operation
                 headers: {
                     authorization: token ? `Bearer ${token}` : "",
                 }
@@ -317,7 +343,6 @@ exports.loadBillingMethods = function (token,segmentType) {
         client.query({
             query:getBillingMethods,
             context: {
-                // example of setting the headers with context per operation
                 headers: {
                     authorization: token ? `Bearer ${token}` : "",
                 }
@@ -326,7 +351,7 @@ exports.loadBillingMethods = function (token,segmentType) {
                 type: segmentType,
             }
         }).then(result => {
-            console.log(result.data.getBillingMethods);
+            //console.log(result.data.getBillingMethods);
             resolve(result.data.getBillingMethods);
         })
             .catch(error => {
@@ -335,8 +360,78 @@ exports.loadBillingMethods = function (token,segmentType) {
             });
     });
 };
-// loadTimeTables(token,"PET_SHOP");
-//loadBillingMethods(token,"PET_SHOP");
-// loadCategoriesWithServices(token,"PET_SHOP");
-//login('','').then(result => console.log('Login',result)).catch(e=>console.log("ERROR",e));
-// loadChecklists(token,"PET_SHOP");
+
+exports.searchCep = function (zipCode){
+//function searchCep(zipCode){
+    let consultZip;
+    if(zipCode.indexOf('-')>0){
+        let newZipString;
+        newZipString = zipCode.split('-');
+        consultZip = newZipString[0] + newZipString[1];
+    }
+    else{
+        consultZip = zipCode;
+    }
+    return new Promise(function(resolve, reject) {
+        cep(consultZip).then((result) => {
+            if (!result.errors) {
+                //console.log(result);
+                resolve(result);
+            } else {
+                console.log('ERROR CEP API',result.errors);
+                reject(result);
+            }
+        }, (result) => {
+            console.log('ERROR Network',result);
+            reject(result);
+        });
+    });
+};
+
+exports.createClient = function (token,clientInput) {
+    return new Promise(function(resolve, reject) {
+        client.mutate({
+            mutation: createClient,
+            context: {
+                headers: {
+                    authorization: token ? `Bearer ${token}` : "",
+                }
+            },
+            variables: {
+                clientInput: clientInput
+            }
+        }).then(result => {
+            //console.log(result.data.createClient);
+            resolve(result.data.createClient);
+        })
+            .catch(error => {
+                console.error('error',error);
+                reject(error);
+            });
+    });
+};
+
+exports.createPet = function (token,clientID,petInput) {
+    return new Promise(function(resolve, reject) {
+        client.mutate({
+            mutation: createPet,
+            context: {
+                headers: {
+                    authorization: token ? `Bearer ${token}` : "",
+                }
+            },
+            variables: {
+                client: clientID,
+                petInput: petInput
+            }
+        }).then(result => {
+            //console.log(result.data.createClient);
+            resolve(result.data.createPet);
+        })
+            .catch(error => {
+                console.error('error',error);
+                reject(error);
+            });
+    });
+};
+
