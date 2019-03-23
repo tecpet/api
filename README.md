@@ -1,4 +1,4 @@
-![tecpet-api](https://img.shields.io/badge/npm%20package-1.0.6-brightgreen.svg)
+![tecpet-api](https://img.shields.io/badge/npm%20package-1.0.8-brightgreen.svg)
 
 # tecpet-api
 API calls and usage description for the tecpet platform
@@ -31,7 +31,7 @@ Params:
 - token: Authentication Token from Login
 - segmentType: ENUM 'PET_SHOP', 'CLINIC', 'DAY_CARE', 'HOTEL'.
 
-1. Get Shop General Info
+1. Load Shop General Info
 
         api.loadShopGeneralInfo(token).then(result => {console.log(result)});
        
@@ -39,14 +39,19 @@ Params:
 
         api.getSegments(token).then(result => {console.log(result)});
         
-3. Load Timetable, days and hours open, including breaks, for each segment.
+3. Load Timetable (Days and Hours open).
 
         api.loadTimeTables(token,segmentType).then(result => {console.log(result)});
         
-4. Load Categories for each segment with the services that exist for each category
+4. Load Categories with associeted services
 
         api.loadCategoriesWithServices(token,segmentType).then(result => {console.log(result)});
         
-5. Load Checklists for segments
+5. Load Checklists
 
         api.loadChecklists(token,segmentType).then(result => {console.log(result)});
+        
+6. Load Billing Methods
+
+        api.loadBillingMethods(token,segmentType).then(result => {console.log(result)});
+
