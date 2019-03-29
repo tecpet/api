@@ -6,6 +6,141 @@ const InMemoryCache = require('apollo-cache-inmemory').InMemoryCache;
 const setContext = require('apollo-link-context').setContext;
 const cep = require('cep-promise');
 
+const getClients = gql`
+    query getClients{
+        getClients{
+            id
+            name
+            email
+            phoneNumber
+            cpf
+            birth
+            address{
+                street
+                number
+                zipCode
+                complement
+                neighborhood
+                city
+                uf
+            }
+            pets{
+                id
+                name
+                specie
+                hair
+                size
+                observation
+                breed{
+                    id
+                    name
+                    specie
+                    hair
+                    size
+                    notAccepted
+                    icon
+                }
+                genre
+            }
+            facebookId
+        }
+    }
+`;
+
+const getClientById = gql`
+    query client($id: ID!){
+        client(id:$id){
+            id
+            name
+            email
+            phoneNumber
+            cpf
+            birth
+            address{
+                street
+                number
+                zipCode
+                complement
+                neighborhood
+                city
+                uf
+            }
+            pets{
+                id
+                name
+                specie
+                hair
+                size
+                observation
+                breed{
+                    id
+                    name
+                    specie
+                    hair
+                    size
+                    notAccepted
+                    icon
+                }
+                genre
+            }
+            facebookId
+        }
+    }
+`;
+
+const clientByFacebookId = gql`
+    query clientByFacebookId($facebookId: String!){
+        clientByFacebookId(facebookId:$facebookId){
+            id
+            name
+            email
+            phoneNumber
+            cpf
+            birth
+            address{
+                street
+                number
+                zipCode
+                complement
+                neighborhood
+                city
+                uf
+            }
+            pets{
+                id
+                name
+                specie
+                hair
+                size
+                observation
+                breed{
+                    id
+                    name
+                    specie
+                    hair
+                    size
+                    notAccepted
+                    icon
+                }
+                genre
+            }
+            facebookId
+        }
+    }
+`;
+const getNotAcceptedBreeds = gql`
+    query getNotAcceptedBreeds($specie: SpecieType!){
+        getNotAcceptedBreeds(specie:$specie){
+            id
+            name
+            specie
+            hair
+            size
+            notAccepted
+        }
+    }
+`;
+
 const createClient = gql`
     mutation createClient($clientInput: ClientInput!) {
         createClient(clientInput: $clientInput) {
@@ -434,4 +569,94 @@ exports.createPet = function (token,clientID,petInput) {
             });
     });
 };
+
+exports.loadNotAcceptedBreeds = function (token,specie) {
+    return new Promise(function(resolve, reject) {
+        client.query({
+            query:getNotAcceptedBreeds,
+            context: {
+                headers: {
+                    authorization: token ? `Bearer ${token}` : "",
+                }
+            },
+            variables: {
+                specie: specie,
+            }
+        }).then(result => {
+            // console.log('Get Not Accepted', result.data.getNotAcceptedBreeds);
+            resolve(result.data.getNotAcceptedBreeds);
+        })
+            .catch(error => {
+                console.error('error',error);
+                reject(error);
+            });
+    });
+};
+
+exports.loadClients= function (token) {
+    return new Promise(function(resolve, reject) {
+        client.query({
+            query:getClients,
+            context: {
+                headers: {
+                    authorization: token ? `Bearer ${token}` : "",
+                }
+            }
+        }).then(result => {
+            // console.log('Get All Clients', result.data.getClients);
+            resolve(result.data.getClients);
+        })
+            .catch(error => {
+                console.error('error',error);
+                reject(error);
+            });
+    });
+};
+
+exports.loadClientById= function (token,clientID) {
+    return new Promise(function(resolve, reject) {
+        client.query({
+            query:getClientById,
+            context: {
+                headers: {
+                    authorization: token ? `Bearer ${token}` : "",
+                }
+            },
+            variables: {
+                id: clientID,
+            }
+        }).then(result => {
+            // console.log('Get Client id', result.data.client);
+            resolve(result.data.client);
+        })
+            .catch(error => {
+                console.error('error',error);
+                reject(error);
+            });
+    });
+};
+
+exports.loadClientByFacebookId = function (token,facebookId) {
+    return new Promise(function(resolve, reject) {
+        client.query({
+            query:clientByFacebookId,
+            context: {
+                headers: {
+                    authorization: token ? `Bearer ${token}` : "",
+                }
+            },
+            variables: {
+                facebookId: facebookId,
+            }
+        }).then(result => {
+            // console.log('Get Client by FB id', result.data.clientByFacebookId);
+            resolve(result.data.clientByFacebookId);
+        })
+            .catch(error => {
+                console.error('error',error);
+                reject(error);
+            });
+    });
+};
+
 
