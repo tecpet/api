@@ -6,6 +6,67 @@ const InMemoryCache = require('apollo-cache-inmemory').InMemoryCache;
 const setContext = require('apollo-link-context').setContext;
 const cep = require('cep-promise');
 
+const getCombos = gql`
+    query getCombos($segmentType: ShopSegment!) {
+        getCombos(segmentType: $segmentType){
+            id
+            name
+            services {
+                id
+                name
+                priceTable{
+                    price
+                    duration
+                    hairItemType
+                    sizeItemType
+                }
+                species{
+                    CAT
+                    DOG
+                }
+                segmentType
+                serviceCategoryType
+            }
+            discount
+            species{
+                CAT
+                DOG
+            }
+        }
+    }
+`;
+
+const getAvailableTimes = gql`
+    query getAvailableTimes($bookingClientInput: BookingClientInput!){
+        getAvailableTimes(bookingClientInput:$bookingClientInput){
+            options{
+                id
+                start
+                stop
+                bookingInfo{
+                    service
+                    pet
+                    price
+                    duration
+                    serviceName
+                    petName
+                }
+            }
+            discounts{
+                id
+                name
+                discount
+                services
+                totalDiscount
+            }
+            prices{
+                totalPrice
+                totalDiscount
+            }
+        }
+    }
+`;
+
 const getClients = gql`
     query getClients{
         getClients{
@@ -659,4 +720,50 @@ exports.loadClientByFacebookId = function (token,facebookId) {
     });
 };
 
+
+exports.loadAvailableTimes = function (token,bookingClientInput) {
+    return new Promise(function(resolve, reject) {
+        client.query({
+            query:getAvailableTimes,
+            context: {
+                headers: {
+                    authorization: token ? `Bearer ${token}` : "",
+                }
+            },
+            variables: {
+                bookingClientInput: bookingClientInput,
+            }
+        }).then(result => {
+            // console.log('Get Client by FB id', result.data.clientByFacebookId);
+            resolve(result.data.getAvailableTimes);
+        })
+            .catch(error => {
+                console.error('error',error);
+                reject(error);
+            });
+    });
+};
+
+exports.loadGetCombos = function (token,segmentType) {
+    return new Promise(function(resolve, reject) {
+        client.query({
+            query:getCombos,
+            context: {
+                headers: {
+                    authorization: token ? `Bearer ${token}` : "",
+                }
+            },
+            variables: {
+                segmentType: segmentType,
+            }
+        }).then(result => {
+            // console.log('Get Client by FB id', result.data.clientByFacebookId);
+            resolve(result.data.getCombos);
+        })
+            .catch(error => {
+                console.error('error',error);
+                reject(error);
+            });
+    });
+};
 
