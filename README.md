@@ -1,4 +1,4 @@
-![tecpet-api](https://img.shields.io/badge/npm%20package-1.0.10-brightgreen.svg)
+![tecpet-api](https://img.shields.io/badge/npm%20package-1.0.11-brightgreen.svg)
 
 # tecpet-api
 API calls and usage description for the tecpet platform
@@ -38,6 +38,8 @@ Params:
 - petID: Scalar representing the unique ID of the pet.
 - facebookID: String representing the unique token of the user given by Facebook
 - specie: ENUM 'CAT','DOG'.
+- bookingClientInput: Object representing client data and date for querying availbale times.
+
 
 1. Load Shop General Info
 
@@ -68,11 +70,27 @@ Params:
         api.searchCep(zipCode).then(result => {console.log(result)});   
         
 8. Create Client
-
+        
+        Example:
+        const clientInput = {
+            name: 'Hannah',
+            phoneNumber: '48995433445',
+            facebookId: '1235tfdsg5213' 
+        };
         api.createClient(token,clientInput).then(result => {console.log(result)});
      
 9. Create Pet
-
+        
+        Example:
+        const clientID = 10;
+        const petInput = {
+            name: 'Rex',
+            specie: 'DOG',
+            hair: 'LONG',
+            size: 'BIG',
+            breed: 46,
+            genre: 'MALE'
+        };
         api.createPet(token,clientID,petInput).then(result => {console.log(result)});
        
 10. Get Not Accepted Breeds by Specie
@@ -89,4 +107,24 @@ Params:
         
 13. Get client by Facebook ID
 
-        api.loadClientByFacebookId(token,facebookID).then(result => {console.log(result)});        
+        api.loadClientByFacebookId(token,facebookID).then(result => {console.log(result)}); 
+        
+14. Get combos of services for segment
+
+        api.loadGetCombos(token,segmentType).then(result => {console.log(result)}); 
+        
+15. Get available times for booking services
+
+        Exemple :
+        const today = new Date();
+        const bookingClientInput = {
+            date: today,
+            segmentType: 'PET_SHOP',
+            client: 1,
+            pets: [1],
+            services: [1,2],
+            premise: 'ENTRY_TIME',
+            combos: [13]
+        };
+        api.loadAvailableTimes(token,bookingClientInput).then(result => {console.log(result)}); 
+                   
