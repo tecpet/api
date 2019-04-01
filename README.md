@@ -1,4 +1,4 @@
-![tecpet-api](https://img.shields.io/badge/npm%20package-1.0.8-brightgreen.svg)
+![tecpet-api](https://img.shields.io/badge/npm%20package-1.0.10-brightgreen.svg)
 
 # tecpet-api
 API calls and usage description for the tecpet platform
@@ -27,9 +27,17 @@ Pass the token on future API calls as a parameter:
     api.getShopGeneralInfo(token).then(result => {console.log(result)});
     
 # API functions calls
+The complete list for params and types can be found at http://tecpet-api-dev.sa-east-1.elasticbeanstalk.com/graphql/
 Params:  
 - token: Authentication Token from Login
 - segmentType: ENUM 'PET_SHOP', 'CLINIC', 'DAY_CARE', 'HOTEL'.
+- zipCode: String representing the zip code of the desired address. Ex : '88103650'
+- clientInput: Object represeting the client data to be created. A more specific description can be found on the link above.
+- petInput: Object represeting the pet data to be created. A more specific description can be found on the link above.
+- clientID: Scalar representing the unique ID of the client.
+- petID: Scalar representing the unique ID of the pet.
+- facebookID: String representing the unique token of the user given by Facebook
+- specie: ENUM 'CAT','DOG'.
 
 1. Load Shop General Info
 
@@ -54,4 +62,31 @@ Params:
 6. Load Billing Methods
 
         api.loadBillingMethods(token,segmentType).then(result => {console.log(result)});
+        
+7. Get Address from CEP
 
+        api.searchCep(zipCode).then(result => {console.log(result)});   
+        
+8. Create Client
+
+        api.createClient(token,clientInput).then(result => {console.log(result)});
+     
+9. Create Pet
+
+        api.createPet(token,clientID,petInput).then(result => {console.log(result)});
+       
+10. Get Not Accepted Breeds by Specie
+
+        api.loadNotAcceptedBreeds(token,specie).then(result => {console.log(result)});     
+
+11. Get All Clients
+
+        api.loadClients(token).then(result => {console.log(result)});
+        
+12. Get client by ID
+
+        api.loadClientById(token,clientID).then(result => {console.log(result)});
+        
+13. Get client by Facebook ID
+
+        api.loadClientByFacebookId(token,facebookID).then(result => {console.log(result)});        
