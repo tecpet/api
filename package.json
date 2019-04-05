@@ -1,6 +1,6 @@
 {
   "name": "@tecpet/api",
-  "version": "1.0.11",
+  "version": "1.0.12",
   "description": "API methods for third party collaborators",
   "main": "index.js",
   "scripts": {

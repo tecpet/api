@@ -6,6 +6,62 @@ const InMemoryCache = require('apollo-cache-inmemory').InMemoryCache;
 const setContext = require('apollo-link-context').setContext;
 const cep = require('cep-promise');
 
+const createBooking  = gql`
+    mutation createBooking($timeId: ID!, $bookingInput: BookingInput!, $checklist: [ChecklistValueInput]!, $employee: ID!){
+        createBooking(timeId:$timeId,bookingInput:$bookingInput, checklist:$checklist, employee:$employee){
+            date
+            id
+            totalDuration
+            observation
+            discount
+            totalPrice
+            entryTime
+            leaveTime
+            client
+            pets{
+                name
+                breed
+                services
+            }
+            status
+            premise
+            entryHour
+            takeAndBring
+            bookingsTrackings{
+                checklists{
+                    checklistItem
+                    value
+                    name
+                }
+                status
+            }
+            invoice
+            cage
+        }
+    }
+`;
+const getQuickAvailableTimes = gql`
+    query getQuickAvailableTimes($bookingQuickClientInput: BookingQuickClientInput!){
+        getQuickAvailableTimes(bookingQuickClientInput:$bookingQuickClientInput){
+            options{
+                start
+                stop
+            }
+            discounts{
+                id
+                name
+                discount
+                services
+                totalDiscount
+            }
+            prices{
+                totalPrice
+                totalDiscount
+            }
+        }
+    }
+`;
+
 const getCombos = gql`
     query getCombos($segmentType: ShopSegment!) {
         getCombos(segmentType: $segmentType){
@@ -407,6 +463,7 @@ exports.login = function (user,password) {
     });
 };
 
+const fetchPolicy = 'no-cache';
 
 const httpLink = createHttpLink({
     uri: 'http://tecpet-api-dev.sa-east-1.elasticbeanstalk.com/graphql/',
@@ -422,6 +479,7 @@ const client = new ApolloClient({
 exports.getSegments = function (token) {
     return new Promise(function(resolve, reject) {
         client.query({
+            fetchPolicy: fetchPolicy,
             query:getSegments,
             context: {
                 headers: {
@@ -442,6 +500,7 @@ exports.getSegments = function (token) {
 exports.loadShopGeneralInfo = function (token) {
     return new Promise(function(resolve, reject) {
         client.query({
+            fetchPolicy: fetchPolicy,
             query:getShopGeneralInfo,
             context: {
                 headers: {
@@ -464,6 +523,7 @@ exports.loadShopGeneralInfo = function (token) {
 exports.loadTimeTables = function (token,segmentType) {
     return new Promise(function(resolve, reject) {
         client.query({
+            fetchPolicy: fetchPolicy,
             query:getTimeTable,
             context: {
                 headers: {
@@ -489,6 +549,7 @@ exports.loadTimeTables = function (token,segmentType) {
 exports.loadCategoriesWithServices = function (token,segmentType) {
     return new Promise(function(resolve, reject) {
         client.query({
+            fetchPolicy: fetchPolicy,
             query:getServiceCategoriesWithServices,
             context: {
                 headers: {
@@ -513,6 +574,7 @@ exports.loadChecklists = function (token,segmentType) {
 // function loadChecklists(token,segmentType) {
     return new Promise(function(resolve, reject) {
         client.query({
+            fetchPolicy: fetchPolicy,
             query:getChecklists,
             context: {
                 headers: {
@@ -537,6 +599,7 @@ exports.loadBillingMethods = function (token,segmentType) {
 //function loadBillingMethods(token,segmentType) {
     return new Promise(function(resolve, reject) {
         client.query({
+            fetchPolicy: fetchPolicy,
             query:getBillingMethods,
             context: {
                 headers: {
@@ -634,6 +697,7 @@ exports.createPet = function (token,clientID,petInput) {
 exports.loadNotAcceptedBreeds = function (token,specie) {
     return new Promise(function(resolve, reject) {
         client.query({
+            fetchPolicy: fetchPolicy,
             query:getNotAcceptedBreeds,
             context: {
                 headers: {
@@ -657,6 +721,7 @@ exports.loadNotAcceptedBreeds = function (token,specie) {
 exports.loadClients= function (token) {
     return new Promise(function(resolve, reject) {
         client.query({
+            fetchPolicy: fetchPolicy,
             query:getClients,
             context: {
                 headers: {
@@ -677,6 +742,7 @@ exports.loadClients= function (token) {
 exports.loadClientById= function (token,clientID) {
     return new Promise(function(resolve, reject) {
         client.query({
+            fetchPolicy: fetchPolicy,
             query:getClientById,
             context: {
                 headers: {
@@ -700,6 +766,7 @@ exports.loadClientById= function (token,clientID) {
 exports.loadClientByFacebookId = function (token,facebookId) {
     return new Promise(function(resolve, reject) {
         client.query({
+            fetchPolicy: fetchPolicy,
             query:clientByFacebookId,
             context: {
                 headers: {
@@ -724,6 +791,7 @@ exports.loadClientByFacebookId = function (token,facebookId) {
 exports.loadAvailableTimes = function (token,bookingClientInput) {
     return new Promise(function(resolve, reject) {
         client.query({
+            fetchPolicy: fetchPolicy,
             query:getAvailableTimes,
             context: {
                 headers: {
@@ -734,7 +802,6 @@ exports.loadAvailableTimes = function (token,bookingClientInput) {
                 bookingClientInput: bookingClientInput,
             }
         }).then(result => {
-            // console.log('Get Client by FB id', result.data.clientByFacebookId);
             resolve(result.data.getAvailableTimes);
         })
             .catch(error => {
@@ -747,6 +814,7 @@ exports.loadAvailableTimes = function (token,bookingClientInput) {
 exports.loadGetCombos = function (token,segmentType) {
     return new Promise(function(resolve, reject) {
         client.query({
+            fetchPolicy: fetchPolicy,
             query:getCombos,
             context: {
                 headers: {
@@ -757,8 +825,31 @@ exports.loadGetCombos = function (token,segmentType) {
                 segmentType: segmentType,
             }
         }).then(result => {
-            // console.log('Get Client by FB id', result.data.clientByFacebookId);
             resolve(result.data.getCombos);
+        })
+            .catch(error => {
+                console.error('error',error);
+                reject(error);
+            });
+    });
+};
+
+
+exports.loadQuickAvailableTimes = function (token,bookingQuickClientInput) {
+    return new Promise(function(resolve, reject) {
+        client.query({
+            fetchPolicy: fetchPolicy,
+            query:getQuickAvailableTimes,
+            context: {
+                headers: {
+                    authorization: token ? `Bearer ${token}` : "",
+                }
+            },
+            variables: {
+                bookingQuickClientInput: bookingQuickClientInput,
+            }
+        }).then(result => {
+            resolve(result.data.getQuickAvailableTimes);
         })
             .catch(error => {
                 console.error('error',error);
