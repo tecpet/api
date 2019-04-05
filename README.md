@@ -38,7 +38,8 @@ Params:
 - petID: Scalar representing the unique ID of the pet.
 - facebookID: String representing the unique token of the user given by Facebook
 - specie: ENUM 'CAT','DOG'.
-- bookingClientInput: Object representing client data and date for querying availbale times.
+- bookingClientInput: Object representing client data,pet, services, combos and date for querying availbale times.
+- bookingQuickClientInput Object representing pet info, services, combos and date for querying availbale times.
 
 
 1. Load Shop General Info
@@ -126,5 +127,20 @@ Params:
             premise: 'ENTRY_TIME',
             combos: [13]
         };
-        api.loadAvailableTimes(token,bookingClientInput).then(result => {console.log(result)}); 
+        api.loadAvailableTimes(token,bookingClientInput).then(result => {console.log(result)});
+        
+16. Get quick available times for booking services (without client and pet)
+
+        Exemple :
+        const today = new Date();
+        const bookingQuickClientInput = {
+            date: today,
+            segmentType: 'PET_SHOP',
+            services: [1,2],
+            specie: 'DOG',
+            hair: 'LONG',
+            size: 'BIG'
+        };
+
+        api.loadQuickAvailableTimes(token,bookingQuickClientInput).then(result => {console.log(result)}); 
                    
