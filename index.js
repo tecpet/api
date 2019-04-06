@@ -5,7 +5,7 @@ const createHttpLink = require('apollo-link-http').createHttpLink;
 const InMemoryCache = require('apollo-cache-inmemory').InMemoryCache;
 const setContext = require('apollo-link-context').setContext;
 const cep = require('cep-promise');
-const BASE_URL = process.env.API_URL || 'https://app.tec.pet';
+const BASE_URL = process.env.API_URL || 'https://dev.tec.pet';
 
 const createBooking  = gql`
     mutation createBooking($timeId: ID!, $bookingInput: BookingInput!, $checklist: [ChecklistValueInput]!, $employee: ID!){
@@ -941,4 +941,3 @@ exports.createBooking = function (token, timeId, bookingInput, checklist, employ
         });
     });
 };
-
