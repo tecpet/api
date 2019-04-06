@@ -466,7 +466,7 @@ exports.login = function (user,password) {
 const fetchPolicy = 'no-cache';
 
 const httpLink = createHttpLink({
-    uri: 'http://tecpet-api-dev.sa-east-1.elasticbeanstalk.com/graphql/',
+    uri: 'https://dev.tec.pet/graphql/',
     fetch: fetch
 });
 
@@ -858,3 +858,61 @@ exports.loadQuickAvailableTimes = function (token,bookingQuickClientInput) {
     });
 };
 
+
+
+// VARIABLES AND FUNCTIONS FOR TESTS
+// Todo DO NOT COMMIT !!
+
+//exports.login('marcus','12345').then(result => console.log('Login',result)).catch(e=>console.log("ERROR",e));
+const token = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJsb2dpbiI6Im1hcmN1cyIsInBhc3N3b3JkIjoiMTIzNDUiLCJpYXQiOjE1NTMzNDg3MDEsImV4cCI6MTU1NTk0MDcwMX0.nQvH-U2mDfnnIYPtdKdwLJ3ddcxpY6hmosf1xZPTdrg';
+
+// const clientInput = {
+//     name: 'Marcus API',
+//     phoneNumber: '48996323887',
+//     facebookId: 'tokenTesteAPI' // created id 29
+// };
+// const clientID = 10;
+// const petInput = {
+//     name: 'Chatbot',
+//     specie: 'DOG',
+//     hair: 'LONG',
+//     size: 'BIG',
+//     breed: 46,
+//     genre: 'MALE'
+// };
+const today = new Date();
+// const bookingClientInput = {
+//     date: today,
+//     segmentType: 'PET_SHOP',
+//     client: 1,
+//     pets: [1],
+//     services: [1,2],
+//     premise: 'ENTRY_TIME',
+//     combos: [13]
+// };
+// exports.loadAvailableTimes(token,bookingClientInput).then(result => console.log(result));
+//
+const bookingQuickClientInput = {
+    date: today,
+    segmentType: 'PET_SHOP',
+    services: [1,2],
+    specie: 'DOG',
+    hair: 'LONG',
+    size: 'BIG'
+};
+exports.loadQuickAvailableTimes(token,bookingQuickClientInput).then(result => console.log(result)).catch(e=>console.log("ERROR",e));
+
+// exports.loadGetCombos(token,'PET_SHOP').then(result => console.log(result));
+// exports.getSegments(token).then(result => console.log(result));
+
+// exports.loadClients(token).then(result => console.log(result));
+// exports.loadClientById(token,29).then(result => console.log('Get client by ID',result));
+// exports.loadClientByFacebookId(token,'tokenTesteAPI').then(result => console.log('Get client by FB id',result));
+
+// exports.loadNotAcceptedBreeds(token,'CAT').then(result => console.log(result));
+//console.log('CLIENTE',clientInput);
+//console.log('PET',petInput);
+// exports.createClient(token,clientInput).then(result => console.log(result)).catch(e=>console.log("ERROR",e));
+//exports.createPet(token,clientID,petInput).then(result => console.log(result)).catch(e=>console.log("ERROR",e)); //WORKING
+//exports.loadBillingMethods(token,'PET_SHOP').then(result => console.log(result));
+// Todo DO NOT COMMIT !!
