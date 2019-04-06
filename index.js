@@ -5,6 +5,7 @@ const createHttpLink = require('apollo-link-http').createHttpLink;
 const InMemoryCache = require('apollo-cache-inmemory').InMemoryCache;
 const setContext = require('apollo-link-context').setContext;
 const cep = require('cep-promise');
+const BASE_URL = process.env.API_URL || 'https://app.tec.pet';
 
 const createBooking  = gql`
     mutation createBooking($timeId: ID!, $bookingInput: BookingInput!, $checklist: [ChecklistValueInput]!, $employee: ID!){
@@ -443,7 +444,7 @@ function json(response) {
 exports.login = function (user,password) {
 //function login(user,password) {
     return new Promise(function(resolve, reject) {
-        fetch('http://tecpet-api-dev.sa-east-1.elasticbeanstalk.com/auth/login', {
+        fetch(BASE_URL + '/auth/login', {
             method: "POST",
             body: JSON.stringify({"login": user, "password": password}),
             headers: {
@@ -466,7 +467,7 @@ exports.login = function (user,password) {
 const fetchPolicy = 'no-cache';
 
 const httpLink = createHttpLink({
-    uri: 'http://tecpet-api-dev.sa-east-1.elasticbeanstalk.com/graphql/',
+    uri: BASE_URL + '/graphql/',
     fetch: fetch
 });
 
