@@ -7,6 +7,17 @@ const setContext = require('apollo-link-context').setContext;
 const cep = require('cep-promise');
 const BASE_URL = process.env.API_URL || 'https://dev.tec.pet';
 
+const getEmployees = gql`
+    query getEmployees {
+        getEmployees{
+            id
+            name
+            email
+            phoneNumber
+        }
+    }
+`;
+
 const createBooking  = gql`
     mutation createBooking($timeId: ID!, $bookingInput: BookingInput!, $checklist: [ChecklistValueInput]!, $employee: ID!){
         createBooking(timeId:$timeId,bookingInput:$bookingInput, checklist:$checklist, employee:$employee){
@@ -941,3 +952,24 @@ exports.createBooking = function (token, timeId, bookingInput, checklist, employ
         });
     });
 };
+
+exports.getEmployees = function (token) {
+    return new Promise(function(resolve, reject) {
+        client.query({
+            fetchPolicy: fetchPolicy,
+            query:getEmployees,
+            context: {
+                headers: {
+                    authorization: token ? `Bearer ${token}` : "",
+                }
+            }
+        }).then(result => {
+            resolve(result.data.getEmployees);
+        })
+            .catch(error => {
+                console.error('error',error);
+                reject(error);
+            });
+    });
+};
+
