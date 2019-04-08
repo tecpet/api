@@ -1,4 +1,4 @@
-![tecpet-api](https://img.shields.io/badge/npm%20package-1.0.11-brightgreen.svg)
+![tecpet-api](https://img.shields.io/badge/npm%20package-1.0.15-brightgreen.svg)
 
 # tecpet-api
 API calls and usage description for the tecpet platform
@@ -40,7 +40,9 @@ Params:
 - specie: ENUM 'CAT','DOG'.
 - bookingClientInput: Object representing client data,pet, services, combos and date for querying availbale times.
 - bookingQuickClientInput Object representing pet info, services, combos and date for querying availbale times.
-
+- bookingInput: Object representing data for booking on a availbale time.
+- checklist: Object representing checklit that for the specific booking.
+- employeeID: Scalar representing the unique ID of the employee responsible for booking.
 
 1. Load Shop General Info
 
@@ -143,4 +145,29 @@ Params:
         };
 
         api.loadQuickAvailableTimes(token,bookingQuickClientInput).then(result => {console.log(result)}); 
-                   
+        
+17. Get employees 
+
+        Exemple :
+
+        api.getEmployees(token).then(result => {console.log(result)}); 
+
+18. Create booking from timeID returned by loadAvailableTimes()
+
+        Exemple :
+        const timeID = 'eyJkdG8iOnsiZGF0ZSI6IjIwMTktMDQtMDhU......';
+        const bookingInput = {
+            observation: '',
+            discount: 0,
+            status: 'SCHEDULED',
+            takeAndBring: 0,
+            cage: ''
+        };
+        const checklist = [{
+            checklistItem: 3,
+            name: 'Observações',
+            value: []
+        }];
+        const employeeID = 1;
+
+        api.createBooking(token,timeID,bookingInput,checklist,employeeID).then(result => {console.log(result)});
