@@ -691,7 +691,6 @@ exports.loadBillingMethods = function (token,segmentType) {
 };
 
 exports.searchCep = function (zipCode){
-//function searchCep(zipCode){
     let consultZip;
     if(zipCode.indexOf('-')>0){
         let newZipString;
@@ -703,17 +702,16 @@ exports.searchCep = function (zipCode){
     }
     return new Promise(function(resolve, reject) {
         cep(consultZip).then((result) => {
-            if (!result.errors) {
-                //console.log(result);
-                resolve(result);
-            } else {
-                console.log('ERROR CEP API',result.errors);
-                reject(result);
+            resolve(result);
+        }).catch((error) => {
+            let msg ='';
+            if(error.type === 'service_error'){
+                msg = 'ZIP_NOT_FOUND'
+            } else if (error.type === 'validation_error'){
+                msg = 'ZIP_WRONG_FORMAT'
             }
-        }, (result) => {
-            console.log('ERROR Network',result);
-            reject(result);
-        });
+            reject(msg);
+        })
     });
 };
 
@@ -946,10 +944,10 @@ exports.createBooking = function (token, timeId, bookingInput, checklist, employ
         }).then(result => {
             resolve(result.data.createBooking);
         })
-        .catch(error => {
-            console.error('error',error);
-            reject(error);
-        });
+            .catch(error => {
+                console.error('error',error);
+                reject(error);
+            });
     });
 };
 
