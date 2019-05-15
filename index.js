@@ -7,6 +7,120 @@ const setContext = require('apollo-link-context').setContext;
 const cep = require('cep-promise');
 const BASE_URL = process.env.API_URL || 'https://dev.tec.pet';
 
+
+const getBookinsByUser = gql`
+    query getBookinsByUser($filters: BookingsByUserFilters){
+        getBookinsByUser(filters: $filters){
+            date
+            id
+            totalDuration
+            observation
+            discount
+            totalPrice
+            entryTime
+            leaveTime
+            client{
+                id
+                name
+                email
+                phoneNumber
+                cpf
+                birth
+                address {
+                    street
+                    number
+                    zipCode
+                    complement
+                    neighborhood
+                    city
+                    uf
+                }
+                pets{
+                    id
+                    name
+                    specie
+                    hair
+                    size
+                    observation
+                    breed {
+                        id
+                        name
+                        specie
+                        hair
+                        size
+                        notAccepted
+                        icon
+                    }
+                    genre
+                }
+                facebookId
+            }
+            pets {
+                id
+                name
+                specie
+                hair
+                size
+                observation
+                breed{
+                    id
+                    name
+                    specie
+                    hair
+                    size
+                    notAccepted
+                    icon
+                }
+                genre
+            }
+            services {
+                id
+                name
+                priceTable {
+                    price
+                    duration
+                    hairItemType
+                    sizeItemType
+                }
+                species {
+                    CAT
+                    DOG
+                }
+                segmentType
+                serviceCategoryType
+            }
+            status
+            premise
+            entryHour
+            takeAndBring
+            bookingsTrackings{
+                checklists{
+                    value
+                    name
+                }
+                status
+            }
+            invoice{
+                takeAndBringValue
+                discount
+                discounts{
+                    discountPercent
+                    discountValue
+                    name
+                }
+                totalDiscount
+                totalPrice
+                services {
+                    serviceName
+                    petName
+                    price
+                }
+            }
+            cage
+        }
+    }
+`;
+
 const getEmployees = gql`
     query getEmployees {
         getEmployees{
@@ -963,6 +1077,29 @@ exports.getEmployees = function (token) {
             }
         }).then(result => {
             resolve(result.data.getEmployees);
+        })
+            .catch(error => {
+                console.error('error',error);
+                reject(error);
+            });
+    });
+};
+
+exports.getBookinsByUser = function (token,filters) {
+    return new Promise(function(resolve, reject) {
+        client.query({
+            fetchPolicy: fetchPolicy,
+            query:getBookinsByUser,
+            context: {
+                headers: {
+                    authorization: token ? `Bearer ${token}` : "",
+                }
+            },
+            variables: {
+                filters: filters
+            }
+        }).then(result => {
+            resolve(result.data.getBookinsByUser);
         })
             .catch(error => {
                 console.error('error',error);
