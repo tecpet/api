@@ -190,7 +190,22 @@ const createBooking  = gql`
                     notAccepted
                     icon
                 }
-                services
+            }
+            services{
+                id
+                name
+                priceTable{
+                    price
+                    duration
+                    hairItemType
+                    sizeItemType
+                }
+                species{
+                    CAT
+                    DOG
+                }
+                segmentType
+                serviceCategoryType
             }
             status
             premise
@@ -198,7 +213,6 @@ const createBooking  = gql`
             takeAndBring
             bookingsTrackings{
                 checklists{
-                    checklistItem
                     value
                     name
                 }
