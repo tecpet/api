@@ -1,4 +1,4 @@
-![tecpet-api](https://img.shields.io/badge/npm%20package-1.0.15-brightgreen.svg)
+![tecpet-api](https://img.shields.io/badge/npm%20package-1.0.17-brightgreen.svg)
 
 # tecpet-api
 API calls and usage description for the tecpet platform
@@ -170,4 +170,15 @@ Params:
         }];
         const employeeID = 1;
 
-        api.createBooking(token,timeID,bookingInput,checklist,employeeID).then(result => {console.log(result)});
+        api.createBooking(token,timeID,bookingInput,checklist,employeeID).then(result => {console.log(result)});      
+        
+19. Get Bookings by User 
+        
+        const filters = {
+            client: '60',
+            segment: 'PET_SHOP',
+            status: ['SCHEDULED', 'DONE'],
+            filter: 'ALL'
+        };
+        
+        api.getBookinsByUser(token,filters).then(result => {console.log(result)});
