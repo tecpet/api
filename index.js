@@ -727,7 +727,7 @@ exports.loadTimeTables = function (token,segmentType) {
         })
             .then(result => {
                 // console.log(result.data);
-                resolve(result.data.getSegments);
+                resolve(result.data.segment.timeTable);
             })
             .catch(error => {
                 // console.error('error',error);
