@@ -76,18 +76,7 @@ const getBookinsByUser = gql`
             services {
                 id
                 name
-                priceTable {
-                    price
-                    duration
-                    hairItemType
-                    sizeItemType
-                }
-                species {
-                    CAT
-                    DOG
-                }
-                segmentType
-                serviceCategoryType
+                price
             }
             status
             premise
@@ -95,6 +84,7 @@ const getBookinsByUser = gql`
             takeAndBring
             bookingsTrackings{
                 checklists{
+                    checkListItemId
                     value
                     name
                 }
@@ -117,6 +107,7 @@ const getBookinsByUser = gql`
                 }
             }
             cage
+            segmentType
         }
     }
 `;
@@ -213,6 +204,7 @@ const createBooking  = gql`
             takeAndBring
             bookingsTrackings{
                 checklists{
+                    checkListItemId
                     value
                     name
                 }
@@ -235,6 +227,7 @@ const createBooking  = gql`
                 }
             }
             cage
+            segmentType
         }
     }
 `;
