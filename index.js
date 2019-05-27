@@ -611,6 +611,65 @@ const getSegments = gql`
                 dog
                 cat
             }
+            timeTable{
+                fullTime
+                monday{
+                    closed
+                    hasPause
+                    start
+                    stop
+                    pauseStop
+                    pauseStart
+                }
+                tuesday{
+                    closed
+                    hasPause
+                    start
+                    stop
+                    pauseStop
+                    pauseStart
+                }
+                wednesday{
+                    closed
+                    hasPause
+                    start
+                    stop
+                    pauseStop
+                    pauseStart
+                }
+                thursday{
+                    closed
+                    hasPause
+                    start
+                    stop
+                    pauseStop
+                    pauseStart
+                }
+                friday{
+                    closed
+                    hasPause
+                    start
+                    stop
+                    pauseStop
+                    pauseStart
+                }
+                saturday{
+                    closed
+                    hasPause
+                    start
+                    stop
+                    pauseStop
+                    pauseStart
+                }
+                sunday{
+                    closed
+                    hasPause
+                    start
+                    stop
+                    pauseStop
+                    pauseStart
+                }
+            }
         }
     }
 `;
