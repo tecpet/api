@@ -185,18 +185,7 @@ const createBooking  = gql`
             services{
                 id
                 name
-                priceTable{
-                    price
-                    duration
-                    hairItemType
-                    sizeItemType
-                }
-                species{
-                    CAT
-                    DOG
-                }
-                segmentType
-                serviceCategoryType
+                price
             }
             status
             premise
