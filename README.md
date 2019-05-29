@@ -219,7 +219,7 @@ Params:
        
         const bookingId = 481;
 
-        const timeId = 'timeid####';
+        const timeId = 'timeid_from_api.loadAvailableTimes()';
 
         const status = 'CONFIRMED';
         
