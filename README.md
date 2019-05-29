@@ -192,22 +192,22 @@ Params:
         const status = 'SCHEDULED';
         
         const checklist = [
-        {
-            checklistItem: 25,
-            name: "Adicionais",
-            value: ["Laços"]
-        },
-        {
-            checklistItem: 23,
-            name: "Perfume",
-            value: ["Não"]
-        },
-        {
-            checklistItem: 4,
-            name: "Leva e Traz",
-            value: ["Não"]
-        }
-    ];
+            {
+                checklistItem: 25,
+                name: "Adicionais",
+                value: ["Laços"]
+            },
+            {
+                checklistItem: 23,
+                name: "Perfume",
+                value: ["Não"]
+            },
+            {
+                checklistItem: 4,
+                name: "Leva e Traz",
+                value: ["Não"]
+            }
+        ];
 
         const employee = "15";
 
@@ -224,22 +224,22 @@ Params:
         const status = 'CONFIRMED';
         
         const checklist = [
-        {
-            checklistItem: 25,
-            name: "Adicionais",
-            value: ["Laços"]
-        },
-        {
-            checklistItem: 23,
-            name: "Perfume",
-            value: ["Não"]
-        },
-        {
-            checklistItem: 4,
-            name: "Leva e Traz",
-            value: ["Não"]
-        }
-    ];
+            {
+                checklistItem: 25,
+                name: "Adicionais",
+                value: ["Laços"]
+            },
+            {
+                checklistItem: 23,
+                name: "Perfume",
+                value: ["Não"]
+            },
+            {
+                checklistItem: 4,
+                name: "Leva e Traz",
+                value: ["Não"]
+            }
+        ];
 
         const employee = "15";
 
