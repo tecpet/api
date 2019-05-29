@@ -1,0 +1,14 @@
+{
+  "schemaPath": "graphql.schema.json",
+  "extensions": {
+    "endpoints": {
+      "Remote GraphQL Endpoint": {
+        "url": "https://dev.tec.pet/graphql",
+        "headers": {
+          "user-agent": "JS GraphQL"
+        }
+      },
+      "introspect": true
+    }
+  }
+}

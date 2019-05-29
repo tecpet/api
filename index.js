@@ -7,6 +7,213 @@ const setContext = require('apollo-link-context').setContext;
 const cep = require('cep-promise');
 const BASE_URL = process.env.API_URL || 'https://dev.tec.pet';
 
+const changeBookingDate = gql`
+    mutation changeBookingDate($bookingId: ID!,$timeId: ID!,$status: Status!,$checklist: [ChecklistValueInput],$employee: ID!) {
+        changeBookingDate(bookingId: $bookingId, timeId: $timeId, status: $status, checklist: $checklist, employee: $employee){ 
+            date
+            id
+            totalDuration
+            observation
+            discount
+            totalPrice
+            entryTime
+            leaveTime
+            client{
+                id
+                name
+                email
+                phoneNumber
+                cpf
+                birth
+                address {
+                    street
+                    number
+                    zipCode
+                    complement
+                    neighborhood
+                    city
+                    uf
+                }
+                pets{
+                    id
+                    name
+                    specie
+                    hair
+                    size
+                    observation
+                    breed {
+                        id
+                        name
+                        specie
+                        hair
+                        size
+                        notAccepted
+                        icon
+                    }
+                    genre
+                }
+                facebookId
+            }
+            pets {
+                id
+                name
+                specie
+                hair
+                size
+                observation
+                breed{
+                    id
+                    name
+                    specie
+                    hair
+                    size
+                    notAccepted
+                    icon
+                }
+                genre
+            }
+            services {
+                id
+                name
+                price
+            }
+            status
+            premise
+            entryHour
+            takeAndBring
+            bookingsTrackings{
+                checklists{
+                    checkListItemId
+                    value
+                    name
+                }
+                status
+            }
+            invoice{
+                takeAndBringValue
+                discount
+                discounts{
+                    discountPercent
+                    discountValue
+                    name
+                }
+                totalDiscount
+                totalPrice
+                services {
+                    serviceName
+                    petName
+                    price
+                }
+            }
+            cage
+            segmentType
+        }
+    }
+`;
+
+const changeBookingStatus = gql`
+    mutation changeBookingStatus($bookingId: ID!,$status: Status!,$checklist: [ChecklistValueInput],$employee: ID!, $services: [ID]) {
+        changeBookingStatus(bookingId: $bookingId, status: $status, checklist: $checklist, employee: $employee, services: $services){ 
+            date
+            id
+            totalDuration
+            observation
+            discount
+            totalPrice
+            entryTime
+            leaveTime
+            client{
+                id
+                name
+                email
+                phoneNumber
+                cpf
+                birth
+                address {
+                    street
+                    number
+                    zipCode
+                    complement
+                    neighborhood
+                    city
+                    uf
+                }
+                pets{
+                    id
+                    name
+                    specie
+                    hair
+                    size
+                    observation
+                    breed {
+                        id
+                        name
+                        specie
+                        hair
+                        size
+                        notAccepted
+                        icon
+                    }
+                    genre
+                }
+                facebookId
+            }
+            pets {
+                id
+                name
+                specie
+                hair
+                size
+                observation
+                breed{
+                    id
+                    name
+                    specie
+                    hair
+                    size
+                    notAccepted
+                    icon
+                }
+                genre
+            }
+            services {
+                id
+                name
+                price
+            }
+            status
+            premise
+            entryHour
+            takeAndBring
+            bookingsTrackings{
+                checklists{
+                    checkListItemId
+                    value
+                    name
+                }
+                status
+            }
+            invoice{
+                takeAndBringValue
+                discount
+                discounts{
+                    discountPercent
+                    discountValue
+                    name
+                }
+                totalDiscount
+                totalPrice
+                services {
+                    serviceName
+                    petName
+                    price
+                }
+            }
+            cage
+            segmentType
+        }
+    }
+`;
 
 const getBookinsByUser = gql`
     query getBookinsByUser($filters: BookingsByUserFilters){
@@ -1155,6 +1362,61 @@ exports.getBookinsByUser = function (token,filters) {
             }
         }).then(result => {
             resolve(result.data.getBookinsByUser);
+        })
+            .catch(error => {
+                console.error('error',error);
+                reject(error);
+            });
+    });
+};
+
+exports.changeBookingDate = function (token,bookingId,timeId,status,checklist,employee) {
+    return new Promise(function(resolve, reject) {
+        client.mutate({
+            fetchPolicy: fetchPolicy,
+            mutation:changeBookingDate,
+            context: {
+                headers: {
+                    authorization: token ? `Bearer ${token}` : "",
+                }
+            },
+            variables: {
+                bookingId: bookingId,
+                timeId: timeId,
+                status: status,
+                checklist: checklist,
+                employee: employee
+            }
+        }).then(result => {
+            resolve(result.data.changeBookingDate);
+        })
+            .catch(error => {
+                console.error('error',error);
+                reject(error);
+            });
+    });
+};
+
+exports.changeBookingStatus = function (token,bookingId,status,checklist,employee,services) {
+    return new Promise(function(resolve, reject) {
+        client.mutate({
+            fetchPolicy: fetchPolicy,
+            mutation:changeBookingStatus,
+            context: {
+                headers: {
+                    authorization: token ? `Bearer ${token}` : "",
+                }
+            },
+            variables: {
+                bookingId: bookingId,
+                timeId: timeId,
+                status: status,
+                checklist: checklist,
+                employee: employee,
+                services: services,
+            }
+        }).then(result => {
+            resolve(result.data.changeBookingStatus);
         })
             .catch(error => {
                 console.error('error',error);
