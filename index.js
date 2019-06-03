@@ -1409,7 +1409,6 @@ exports.changeBookingStatus = function (token,bookingId,status,checklist,employe
             },
             variables: {
                 bookingId: bookingId,
-                timeId: timeId,
                 status: status,
                 checklist: checklist,
                 employee: employee,
@@ -1424,3 +1423,4 @@ exports.changeBookingStatus = function (token,bookingId,status,checklist,employe
             });
     });
 };
+
