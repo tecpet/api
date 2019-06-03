@@ -1,4 +1,4 @@
-![tecpet-api](https://img.shields.io/badge/npm%20package-1.0.19-brightgreen.svg)
+![tecpet-api](https://img.shields.io/badge/npm%20package-1.0.22-brightgreen.svg)
 
 # tecpet-api
 API calls and usage description for the tecpet platform
@@ -182,3 +182,67 @@ Params:
         };
         
         api.getBookinsByUser(token,filters).then(result => {console.log(result)});
+        
+20. Change booking date 
+        
+        const bookingId = 481;
+
+        const timeId = 'timeid####';
+
+        const status = 'SCHEDULED';
+        
+        const checklist = [
+            {
+                checklistItem: 25,
+                name: "Adicionais",
+                value: ["Laços"]
+            },
+            {
+                checklistItem: 23,
+                name: "Perfume",
+                value: ["Não"]
+            },
+            {
+                checklistItem: 4,
+                name: "Leva e Traz",
+                value: ["Não"]
+            }
+        ];
+
+        const employee = "15";
+
+        const services = [];
+        
+        api.changeBookingDate(token,bookingId,timeId,status,checklist,employee).then(result => {console.log(result)}).catch(e => console.log(e));
+        
+21. Change booking status
+       
+        const bookingId = 481;
+
+        const timeId = 'timeid_from_api.loadAvailableTimes()';
+
+        const status = 'CONFIRMED';
+        
+        const checklist = [
+            {
+                checklistItem: 25,
+                name: "Adicionais",
+                value: ["Laços"]
+            },
+            {
+                checklistItem: 23,
+                name: "Perfume",
+                value: ["Não"]
+            },
+            {
+                checklistItem: 4,
+                name: "Leva e Traz",
+                value: ["Não"]
+            }
+        ];
+
+        const employee = "15";
+
+        const services = [];
+        
+        api.changeBookingStatus(token,bookingId,status,checklist,employee,services).then(result => {console.log(result)}).catch(e => console.log(e));
