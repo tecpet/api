@@ -7,6 +7,13 @@ const setContext = require('apollo-link-context').setContext;
 const cep = require('cep-promise');
 const BASE_URL = process.env.API_URL || 'https://dev.tec.pet';
 
+const removeBooking = gql`
+    mutation removeBooking ($bookingId: ID!, $employee: ID!){
+        removeBooking(bookingId: $bookingId, employee: $employee){
+            success
+        }
+    }
+`;
 const changeBookingDate = gql`
     mutation changeBookingDate($bookingId: ID!,$timeId: ID!,$status: Status!,$checklist: [ChecklistValueInput],$employee: ID!) {
         changeBookingDate(bookingId: $bookingId, timeId: $timeId, status: $status, checklist: $checklist, employee: $employee){ 
@@ -1248,10 +1255,10 @@ exports.loadAvailableTimes = function (token,bookingClientInput) {
         }).then(result => {
             resolve(result.data.getAvailableTimes);
         })
-            .catch(error => {
-                console.error('error',error);
-                reject(error);
-            });
+        .catch(error => {
+            console.error('error',error);
+            reject(error);
+        });
     });
 };
 
@@ -1423,4 +1430,30 @@ exports.changeBookingStatus = function (token,bookingId,status,checklist,employe
             });
     });
 };
+
+
+exports.removeBooking = function (token,bookingId,employee) {
+    return new Promise(function(resolve, reject) {
+        client.mutate({
+            fetchPolicy: fetchPolicy,
+            mutation:removeBooking,
+            context: {
+                headers: {
+                    authorization: token ? `Bearer ${token}` : "",
+                }
+            },
+            variables: {
+                bookingId: bookingId,
+                employee: employee
+            }
+        }).then(result => {
+            resolve(result.data.removeBooking);
+        })
+            .catch(error => {
+                console.error('error',error);
+                reject(error);
+            });
+    });
+};
+
 
