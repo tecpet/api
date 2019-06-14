@@ -1,4 +1,4 @@
-![tecpet-api](https://img.shields.io/badge/npm%20package-1.0.22-brightgreen.svg)
+![tecpet-api](https://img.shields.io/badge/npm%20package-1.0.25-brightgreen.svg)
 
 # tecpet-api
 API calls and usage description for the tecpet platform
