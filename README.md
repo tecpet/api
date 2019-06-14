@@ -27,7 +27,7 @@ Pass the token on future API calls as a parameter:
     api.getShopGeneralInfo(token).then(result => {console.log(result)});
     
 # API functions calls
-The complete list for params and types can be found at http://tecpet-api-dev.sa-east-1.elasticbeanstalk.com/graphql/
+The complete list for params and types can be found at https://dev.tec.pet/graphql/
 Params:  
 - token: Authentication Token from Login
 - segmentType: ENUM 'PET_SHOP', 'CLINIC', 'DAY_CARE', 'HOTEL'.
@@ -246,3 +246,12 @@ Params:
         const services = [];
         
         api.changeBookingStatus(token,bookingId,status,checklist,employee,services).then(result => {console.log(result)}).catch(e => console.log(e));
+        
+22. Remove Booking 
+
+        Exemple :
+        const bookingId = "642";
+        
+        const employee = "15";
+        
+        api.removeBooking(token,bookingId,employee).then(result => {console.log(result)}); 
