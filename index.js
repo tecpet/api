@@ -7,6 +7,160 @@ const setContext = require('apollo-link-context').setContext;
 const cep = require('cep-promise');
 const BASE_URL = process.env.API_URL || 'https://dev.tec.pet';
 
+const changeChatbotNotification = gql`
+    mutation changeChatbotNotification($id: ID!, $chatbotNotificationInput: ChatbotNotificationInput){
+        changeChatbotNotification(id: $id, chatbotNotificationInput: $chatbotNotificationInput){
+            id
+            id
+            message
+            status
+            type
+            platform
+            createdDate
+            sentDate
+            readDate
+            deliveredDate
+            answeredDate
+            client{
+                id
+                name
+                email
+                phoneNumber
+                cpf
+                birth
+                address {
+                    street
+                    number
+                    zipCode
+                    complement
+                    neighborhood
+                    city
+                    uf
+                }
+                pets{
+                    id
+                    name
+                    specie
+                    hair
+                    size
+                    observation
+                    breed {
+                        id
+                        name
+                        specie
+                        hair
+                        size
+                        notAccepted
+                        icon
+                    }
+                    genre
+                }
+                facebookId
+            }
+            booking{
+                date
+                id
+                totalDuration
+                observation
+                discount
+                totalPrice
+                entryTime
+                leaveTime
+                client{
+                    id
+                    name
+                    email
+                    phoneNumber
+                    cpf
+                    birth
+                    address {
+                        street
+                        number
+                        zipCode
+                        complement
+                        neighborhood
+                        city
+                        uf
+                    }
+                    pets{
+                        id
+                        name
+                        specie
+                        hair
+                        size
+                        observation
+                        breed {
+                            id
+                            name
+                            specie
+                            hair
+                            size
+                            notAccepted
+                            icon
+                        }
+                        genre
+                    }
+                    facebookId
+                }
+                pets {
+                    id
+                    name
+                    specie
+                    hair
+                    size
+                    observation
+                    breed{
+                        id
+                        name
+                        specie
+                        hair
+                        size
+                        notAccepted
+                        icon
+                    }
+                    genre
+                }
+                services {
+                    id
+                    name
+                    price
+                }
+                status
+                premise
+                entryHour
+                takeAndBring
+                bookingsTrackings{
+                    checklists{
+                        checkListItemId
+                        value
+                        name
+                    }
+                    status
+                }
+                invoice{
+                    takeAndBringValue
+                    discount
+                    discounts{
+                        discountPercent
+                        discountValue
+                        name
+                    }
+                    totalDiscount
+                    totalPrice
+                    services {
+                        serviceName
+                        petName
+                        price
+                    }
+                }
+                cage
+                segmentType
+                scheduledByBot
+            }
+        }
+    }
+`;
+
 const removeBooking = gql`
     mutation removeBooking ($bookingId: ID!, $employee: ID!){
         removeBooking(bookingId: $bookingId, employee: $employee){
@@ -16,7 +170,7 @@ const removeBooking = gql`
 `;
 const changeBookingDate = gql`
     mutation changeBookingDate($bookingId: ID!,$timeId: ID!,$status: Status!,$checklist: [ChecklistValueInput],$employee: ID!) {
-        changeBookingDate(bookingId: $bookingId, timeId: $timeId, status: $status, checklist: $checklist, employee: $employee){ 
+        changeBookingDate(bookingId: $bookingId, timeId: $timeId, status: $status, checklist: $checklist, employee: $employee){
             date
             id
             totalDuration
@@ -114,13 +268,14 @@ const changeBookingDate = gql`
             }
             cage
             segmentType
+            scheduledByBot
         }
     }
 `;
 
 const changeBookingStatus = gql`
     mutation changeBookingStatus($bookingId: ID!,$status: Status!,$checklist: [ChecklistValueInput],$employee: ID!, $services: [ID]) {
-        changeBookingStatus(bookingId: $bookingId, status: $status, checklist: $checklist, employee: $employee, services: $services){ 
+        changeBookingStatus(bookingId: $bookingId, status: $status, checklist: $checklist, employee: $employee, services: $services){
             date
             id
             totalDuration
@@ -218,6 +373,7 @@ const changeBookingStatus = gql`
             }
             cage
             segmentType
+            scheduledByBot
         }
     }
 `;
@@ -322,6 +478,7 @@ const getBookinsByUser = gql`
             }
             cage
             segmentType
+            scheduledByBot
         }
     }
 `;
@@ -431,6 +588,7 @@ const createBooking  = gql`
             }
             cage
             segmentType
+            scheduledByBot
         }
     }
 `;
@@ -1255,10 +1413,10 @@ exports.loadAvailableTimes = function (token,bookingClientInput) {
         }).then(result => {
             resolve(result.data.getAvailableTimes);
         })
-        .catch(error => {
-            console.error('error',error);
-            reject(error);
-        });
+            .catch(error => {
+                console.error('error',error);
+                reject(error);
+            });
     });
 };
 
@@ -1448,6 +1606,30 @@ exports.removeBooking = function (token,bookingId,employee) {
             }
         }).then(result => {
             resolve(result.data.removeBooking);
+        })
+            .catch(error => {
+                console.error('error',error);
+                reject(error);
+            });
+    });
+};
+
+exports.changeChatbotNotification = function (token,id, chatbotNotificationInput) {
+    return new Promise(function(resolve, reject) {
+        client.mutate({
+            fetchPolicy: fetchPolicy,
+            mutation:changeChatbotNotification,
+            context: {
+                headers: {
+                    authorization: token ? `Bearer ${token}` : "",
+                }
+            },
+            variables: {
+                id: id,
+                chatbotNotificationInput: chatbotNotificationInput,
+            }
+        }).then(result => {
+            resolve(result.data.changeChatbotNotification);
         })
             .catch(error => {
                 console.error('error',error);
