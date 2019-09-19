@@ -1,4 +1,4 @@
-![tecpet-api](https://img.shields.io/badge/npm%20package-1.0.25-brightgreen.svg)
+![tecpet-api](https://img.shields.io/badge/npm%20package-1.0.26-brightgreen.svg)
 
 # tecpet-api
 API calls and usage description for the tecpet platform
@@ -118,7 +118,7 @@ Params:
         
 15. Get available times for booking services
 
-        Exemple :
+        Example :
         const today = new Date();
         const bookingClientInput = {
             date: today,
@@ -133,7 +133,7 @@ Params:
         
 16. Get quick available times for booking services (without client and pet)
 
-        Exemple :
+        Example :
         const today = new Date();
         const bookingQuickClientInput = {
             date: today,
@@ -148,13 +148,13 @@ Params:
         
 17. Get employees 
 
-        Exemple :
+        Example :
 
         api.getEmployees(token).then(result => {console.log(result)}); 
 
 18. Create booking from timeID returned by loadAvailableTimes()
 
-        Exemple :
+        Example :
         const timeID = 'eyJkdG8iOnsiZGF0ZSI6IjIwMTktMDQtMDhU......';
         const bookingInput = {
             observation: '',
@@ -249,9 +249,27 @@ Params:
         
 22. Remove Booking 
 
-        Exemple :
+        Example :
         const bookingId = "642";
         
         const employee = "15";
         
         api.removeBooking(token,bookingId,employee).then(result => {console.log(result)}); 
+        
+23. Change chatbot notification 
+
+        Example :     
+        #const id: got when chatbot creates a booking
+        const today = new Date();
+        const ChatbotNotificationInput =  {
+            message:'',
+            status: 'CREATED',
+            type: 'BOOKING_CREATION',
+            platform: 'FACEBOOK',
+            createdDate: today,
+            sentDate: today,
+            readDate: today,
+            deliveredDate: today,
+            answeredDate: today
+        };
+        api.changeChatbotNotification(token,id,ChatbotNotificationInput).then(result => {console.log(result)}).catch(e => console.log(e));
