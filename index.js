@@ -7,10 +7,53 @@ const setContext = require('apollo-link-context').setContext;
 const cep = require('cep-promise');
 const BASE_URL = process.env.API_URL || 'https://dev.tec.pet';
 
+const findClient = gql`
+    query findClient($value: String!, $type: FilterClientType!, $page: Int, $qty:Int){
+        findClient( value:$value, type:$type, page:$page , qty:$qty){
+            list{
+                id
+                name
+                email
+                phoneNumber
+                cpf
+                birth
+                address{
+                    street
+                    number
+                    zipCode
+                    complement
+                    neighborhood
+                    city
+                    uf
+                }
+                pets{
+                    id
+                    name
+                    specie
+                    hair
+                    size
+                    observation
+                    breed{
+                        id
+                        name
+                        specie
+                        hair
+                        size
+                        notAccepted
+                        icon
+                    }
+                    genre
+                }
+                facebookId
+            }
+            count
+        }
+    }
+`;
+
 const changeChatbotNotification = gql`
     mutation changeChatbotNotification($id: ID!, $chatbotNotificationInput: ChatbotNotificationInput){
         changeChatbotNotification(id: $id, chatbotNotificationInput: $chatbotNotificationInput){
-            id
             id
             message
             status
@@ -1638,4 +1681,29 @@ exports.changeChatbotNotification = function (token,id, chatbotNotificationInput
     });
 };
 
-
+exports.findClients= function (token,value,type,page,qty){
+    return new Promise(function(resolve, reject) {
+        client.query({
+            fetchPolicy: fetchPolicy,
+            query:findClient,
+            context: {
+                headers: {
+                    authorization: token ? `Bearer ${token}` : "",
+                }
+            },
+            variables: {
+                value: value,
+                type: type,
+                page: page,
+                qty: qty
+            }
+        }).then(result => {
+            // console.log('Get Client id', result.data.client);
+            resolve(result.data.findClient);
+        })
+            .catch(error => {
+                console.error('error',error);
+                reject(error);
+            });
+    });
+};
