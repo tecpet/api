@@ -857,6 +857,39 @@ const createClient = gql`
     mutation createClient($clientInput: ClientInput!) {
         createClient(clientInput: $clientInput) {
             id
+            name
+            email
+            phoneNumber
+            cpf
+            birth
+            address{
+                street
+                number
+                zipCode
+                complement
+                neighborhood
+                city
+                uf
+            }
+            pets{
+                id
+                name
+                specie
+                hair
+                size
+                observation
+                breed{
+                    id
+                    name
+                    specie
+                    hair
+                    size
+                    notAccepted
+                    icon
+                }
+                genre
+            }
+            facebookId
         }
     }
 `;
@@ -865,6 +898,39 @@ const editClient = gql`
     mutation editClient( $id: ID!, $clientInput: ClientInput!) {
         editClient(id: $id, clientInput: $clientInput) {
             id
+            name
+            email
+            phoneNumber
+            cpf
+            birth
+            address{
+                street
+                number
+                zipCode
+                complement
+                neighborhood
+                city
+                uf
+            }
+            pets{
+                id
+                name
+                specie
+                hair
+                size
+                observation
+                breed{
+                    id
+                    name
+                    specie
+                    hair
+                    size
+                    notAccepted
+                    icon
+                }
+                genre
+            }
+            facebookId
         }
     }
 `;
@@ -873,6 +939,21 @@ const editPet = gql`
     mutation editPet($client: ID!,$id: ID!, $petInput: PetInput!) {
         editPet(client: $client, id:$id, petInput: $petInput ) {
             id
+            name
+            specie
+            hair
+            size
+            observation
+            breed{
+                id
+                name
+                specie
+                hair
+                size
+                notAccepted
+                icon
+            }
+            genre
         }
     }
 `;
@@ -880,6 +961,21 @@ const createPet = gql`
     mutation createPet($client: ID!,$petInput: PetInput!) {
         createPet(client: $client, petInput:$petInput ) {
             id
+            name
+            specie
+            hair
+            size
+            observation
+            breed{
+                id
+                name
+                specie
+                hair
+                size
+                notAccepted
+                icon
+            }
+            genre
         }
     }
 `;
@@ -1322,6 +1418,29 @@ exports.createClient = function (token,clientInput) {
     });
 };
 
+exports.editClient = function (token,id,clientInput) {
+    return new Promise(function(resolve, reject) {
+        client.mutate({
+            mutation: editClient,
+            context: {
+                headers: {
+                    authorization: token ? `Bearer ${token}` : "",
+                }
+            },
+            variables: {
+                id: id,
+                clientInput: clientInput
+            }
+        }).then(result => {
+            resolve(result.data.editClient);
+        })
+            .catch(error => {
+                console.error('error',error);
+                reject(error);
+            });
+    });
+};
+
 exports.createPet = function (token,clientID,petInput) {
     return new Promise(function(resolve, reject) {
         client.mutate({
@@ -1332,6 +1451,31 @@ exports.createPet = function (token,clientID,petInput) {
                 }
             },
             variables: {
+                client: clientID,
+                petInput: petInput
+            }
+        }).then(result => {
+            //console.log(result.data.createClient);
+            resolve(result.data.createPet);
+        })
+            .catch(error => {
+                console.error('error',error);
+                reject(error);
+            });
+    });
+};
+
+exports.editPet = function (token,id,clientID,petInput) {
+    return new Promise(function(resolve, reject) {
+        client.mutate({
+            mutation: createPet,
+            context: {
+                headers: {
+                    authorization: token ? `Bearer ${token}` : "",
+                }
+            },
+            variables: {
+                id: id,
                 client: clientID,
                 petInput: petInput
             }
