@@ -284,4 +284,30 @@ Params:
     
         api.findClients(token,value,type,page,qty).then(result => {console.log(result)}).catch(e => console.log(e));
         
+        
+25. Edit Client
+
+        const clientID = 2719;
+        const clientInput = {
+            name: 'PetBot',
+            phoneNumber: '13911111111'
+        };
+        api.editClient(token,clientID,clientInput).then(result => {console.log(result)}).catch(e => console.log(e));
+
+
+25. Edit Pet
+
+        const petID = 5792;
+        const clientID = 2719;
+        const petInput = {
+            name: 'Pet do PetBot',
+            specie: 'DOG',
+            hair: 'MEDIUM',
+            size: 'MEDIUM',
+            genre: 'MALE'
+        };
+        
+        api.editPet(token,petID,clientID,petInput).then(result => {console.log(result)}).catch(e => console.log(e));
+
+
   
