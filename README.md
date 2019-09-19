@@ -273,3 +273,15 @@ Params:
             answeredDate: today
         };
         api.changeChatbotNotification(token,id,ChatbotNotificationInput).then(result => {console.log(result)}).catch(e => console.log(e));
+        
+24. Find Client with filters 
+
+        Example :     
+        const value = '11911111111';  
+        const type = 'PHONE'; {NAME, PET, PHONE, CPF, FACEBOOK_ID}
+        const page = 0; # starts with 0
+        const qty = 10;
+    
+        api.findClients(token,value,type,page,qty).then(result => {console.log(result)}).catch(e => console.log(e));
+        
+  
