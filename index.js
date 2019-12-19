@@ -7,6 +7,166 @@ const setContext = require('apollo-link-context').setContext;
 const cep = require('cep-promise');
 const BASE_URL = process.env.API_URL || 'https://dev.tec.pet';
 
+const getPetPlans = gql`
+    query getPetPlans($filter:PetPlanFilter, $page:Int, $qty:Int) {
+        getPetPlans(filter:$filter, page:$page, qty:$qty){
+            count
+            list{
+                id
+                status
+                createdDate
+                price
+                chargeType
+                startDate
+                endDate
+                observation
+                invoices{
+                    control{
+                        quantity
+                        service{
+                            id
+                            name
+                        }
+                        used
+                    }
+                    dueDate
+                    id
+                    paidDate
+                    paid
+                    paymentMethod
+                    price
+                }
+                logs {
+                    invoice{
+                        dueDate
+                        paymentMethod
+                        id
+                    }
+                    date
+                    employee{
+                        id
+                        name
+                    }
+                    type
+                }
+                pet{
+                    id
+                    name
+                    genre
+                    observation
+                    size
+                    hair
+                    specie
+                    breed {
+                        hair
+                        icon
+                        id
+                        name
+                        notAccepted
+                        specie
+                        size
+                    }
+                }
+                client {
+                    name
+                    cpf
+                    facebookId
+                    id
+                }
+                plan {
+                    description
+                    discount
+                    id
+                    name
+                    planType
+                    services {
+                        quantity
+                        service {
+                            id
+                            name
+                        }
+                    }
+                    priceTable {
+                        duration
+                        hairItemType
+                        price
+                        priceHardInserted
+                        sizeItemType
+                    }
+                    species {
+                        CAT
+                        DOG
+                    }
+                }
+                bookings {
+                    date
+                    id
+                    totalDuration
+                    observation
+                    discount
+                    totalPrice
+                    entryTime
+                    leaveTime
+                    pets {
+                        id
+                        name
+                        specie
+                        hair
+                        size
+                        observation
+                        breed{
+                            id
+                            name
+                            specie
+                            hair
+                            size
+                            notAccepted
+                            icon
+                        }
+                        genre
+                    }
+                    services {
+                        id
+                        name
+                        price
+                    }
+                    status
+                    premise
+                    entryHour
+                    takeAndBring
+                    bookingsTrackings{
+                        checklists{
+                            checkListItemId
+                            value
+                            name
+                        }
+                        status
+                    }
+                    invoice{
+                        takeAndBringValue
+                        discount
+                        discounts{
+                            discountPercent
+                            discountValue
+                            name
+                        }
+                        totalDiscount
+                        totalPrice
+                        services {
+                            serviceName
+                            petName
+                            price
+                        }
+                    }
+                    cage
+                    segmentType
+                }
+            }
+        }
+    }
+`;
+
+
 const findClient = gql`
     query findClient($value: String!, $type: FilterClientType!, $page: Int, $qty:Int){
         findClient( value:$value, type:$type, page:$page , qty:$qty){
@@ -1844,6 +2004,33 @@ exports.findClients= function (token,value,type,page,qty){
         }).then(result => {
             // console.log('Get Client id', result.data.client);
             resolve(result.data.findClient);
+        })
+            .catch(error => {
+                console.error('error',error);
+                reject(error);
+            });
+    });
+};
+
+
+exports.getPetPlans= function (token,filter,page,qty){
+    return new Promise(function(resolve, reject) {
+        client.query({
+            fetchPolicy: fetchPolicy,
+            query:getPetPlans,
+            context: {
+                headers: {
+                    authorization: token ? `Bearer ${token}` : "",
+                }
+            },
+            variables: {
+                filter: filter,
+                page: page,
+                qty: qty
+            }
+        }).then(result => {
+            // console.log('Get Client id', result.data.client);
+            resolve(result.data.getPetPlans);
         })
             .catch(error => {
                 console.error('error',error);
