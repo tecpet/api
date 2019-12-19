@@ -1,4 +1,4 @@
-![tecpet-api](https://img.shields.io/badge/npm%20package-1.0.26-brightgreen.svg)
+![tecpet-api](https://img.shields.io/badge/npm%20package-1.0.28-brightgreen.svg)
 
 # tecpet-api
 API calls and usage description for the tecpet platform
@@ -27,22 +27,7 @@ Pass the token on future API calls as a parameter:
     api.getShopGeneralInfo(token).then(result => {console.log(result)});
     
 # API functions calls
-The complete list for params and types can be found at https://dev.tec.pet/graphql/
-Params:  
-- token: Authentication Token from Login
-- segmentType: ENUM 'PET_SHOP', 'CLINIC', 'DAY_CARE', 'HOTEL'.
-- zipCode: String representing the zip code of the desired address. Ex : '88103650'
-- clientInput: Object represeting the client data to be created. A more specific description can be found on the link above.
-- petInput: Object represeting the pet data to be created. A more specific description can be found on the link above.
-- clientID: Scalar representing the unique ID of the client.
-- petID: Scalar representing the unique ID of the pet.
-- facebookID: String representing the unique token of the user given by Facebook
-- specie: ENUM 'CAT','DOG'.
-- bookingClientInput: Object representing client data,pet, services, combos and date for querying availbale times.
-- bookingQuickClientInput Object representing pet info, services, combos and date for querying availbale times.
-- bookingInput: Object representing data for booking on a availbale time.
-- checklist: Object representing checklit that for the specific booking.
-- employeeID: Scalar representing the unique ID of the employee responsible for booking.
+The complete list for params and types can be found at https://dev.tec.pet/graphql/ docs
 
 1. Load Shop General Info
 
@@ -311,3 +296,15 @@ Params:
 
 
   
+
+25. Get PetPlans 
+
+        const filter = {
+            // client: 183,
+            pet: 229,
+            // status: 'ACTIVE'
+        };
+        
+        const page = 1; //(Optional)
+        const qty = 10; //(Optional)
+        api.getPetPlans(token,filter, page, qty).then(result => {console.log(result)}).catch(e => console.log(e));
