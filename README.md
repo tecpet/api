@@ -296,3 +296,15 @@ The complete list for params and types can be found at https://dev.tec.pet/graph
 
 
   
+
+25. Get PetPlans 
+
+        const filter = {
+            // client: 183,
+            pet: 229,
+            // status: 'ACTIVE'
+        };
+        
+        const page = 1; //(Optional)
+        const qty = 10; //(Optional)
+        api.getPetPlans(token,filter, page, qty).then(result => {console.log(result)}).catch(e => console.log(e));
