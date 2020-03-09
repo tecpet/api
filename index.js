@@ -7,6 +7,59 @@ const setContext = require('apollo-link-context').setContext;
 const cep = require('cep-promise');
 const BASE_URL = process.env.API_URL || 'https://dev.tec.pet';
 
+
+const createPetPlan = gql`
+    mutation createPetPlan($petPlanInput: PetPlanInput!) {
+        createPetPlan(petPlanInput:$petPlanInput){
+            id
+        }
+    }
+`;
+
+const getPlans = gql`
+    query getPlans($filter: FilterPlansInput) {
+        getPlans(filter: $filter){
+            order
+            id
+            name
+            planType
+            monthQuantity
+            species{
+                CAT
+                DOG
+            }
+            description
+            discount
+            services{
+                service{
+                    id
+                    name
+                    priceTable{
+                        price
+                        duration
+                        hairItemType
+                        sizeItemType
+                    }
+                    species{
+                        CAT
+                        DOG
+                    }
+                    segmentType
+                    serviceCategoryType
+                }
+                quantity
+            }
+            priceTable{
+                price
+                duration
+                hairItemType
+                sizeItemType
+                priceHardInserted
+            }
+        }
+    }
+`;
+
 const getPetPlans = gql`
     query getPetPlans($filter:PetPlanFilter, $page:Int, $qty:Int) {
         getPetPlans(filter:$filter, page:$page, qty:$qty){
@@ -818,10 +871,19 @@ const getQuickAvailableTimes = gql`
 `;
 
 const getCombos = gql`
-    query getCombos($segmentType: ShopSegment!) {
-        getCombos(segmentType: $segmentType){
+    query getCombos($segmentType: ShopSegment!, $filter: FilterCombosInput) {
+        getCombos(segmentType: $segmentType, filter:$filter){
             id
             name
+            order
+            showOnChatbot
+            priceTable{
+                duration
+                hairItemType
+                sizeItemType
+                price
+                priceHardInserted
+            }
             services {
                 id
                 name
@@ -830,6 +892,7 @@ const getCombos = gql`
                     duration
                     hairItemType
                     sizeItemType
+                    priceHardInserted
                 }
                 species{
                     CAT
@@ -1173,8 +1236,8 @@ const getChecklists = gql`
 `;
 
 const getServiceCategoriesWithServices = gql`
-    query getServiceCategoriesWithServices($segmentType: ShopSegment!){
-        getServiceCategoriesWithServices(segmentType: $segmentType) {
+    query getServiceCategoriesWithServices($segmentType: ShopSegment!,$filter: FilterServicesInput){
+        getServiceCategoriesWithServices(segmentType: $segmentType,filter:$filter) {
             #            type -> Returning Null
             name
             #            capacity  -> giving error
@@ -1193,6 +1256,9 @@ const getServiceCategoriesWithServices = gql`
                 }
                 segmentType
                 serviceCategoryType
+                description
+                order
+                # filter only showOnChatabot
             }
         }
     }
@@ -1468,6 +1534,9 @@ exports.loadCategoriesWithServices = function (token,segmentType) {
             },
             variables: {
                 segmentType: segmentType,
+                filter: {
+                    showOnChatbot: true,
+                }
             }
         }).then(result => {
             // console.log(result.data.getServiceCategoriesWithServices);
@@ -1779,8 +1848,12 @@ exports.loadGetCombos = function (token,segmentType) {
             },
             variables: {
                 segmentType: segmentType,
+                filter: {
+                    showOnChatbot: true
+                }
             }
         }).then(result => {
+            console.error(result);
             resolve(result.data.getCombos);
         })
             .catch(error => {
@@ -2031,6 +2104,55 @@ exports.getPetPlans= function (token,filter,page,qty){
         }).then(result => {
             // console.log('Get Client id', result.data.client);
             resolve(result.data.getPetPlans);
+        })
+            .catch(error => {
+                console.error('error',error);
+                reject(error);
+            });
+    });
+};
+
+
+exports.getPlans = function (token){
+    return new Promise(function(resolve, reject) {
+        client.query({
+            fetchPolicy: fetchPolicy,
+            query:getPlans,
+            context: {
+                headers: {
+                    authorization: token ? `Bearer ${token}` : "",
+                }
+            },
+            variables: {
+                filter: {
+                    showOnChatbot: true
+                }
+            }
+        }).then(result => {
+            // console.log('Get Client id', result.data.client);
+            resolve(result.data.getPetPlans);
+        })
+            .catch(error => {
+                console.error('error',error);
+                reject(error);
+            });
+    });
+};
+exports.createPetPlan = function (token,petPlanInput) {
+    return new Promise(function(resolve, reject) {
+        client.mutate({
+            mutation: createClient,
+            context: {
+                headers: {
+                    authorization: token ? `Bearer ${token}` : "",
+                }
+            },
+            variables: {
+                petPlanInput: petPlanInput
+            }
+        }).then(result => {
+            //console.log(result.data.createClient);
+            resolve(result.data.createClient);
         })
             .catch(error => {
                 console.error('error',error);
