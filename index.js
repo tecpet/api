@@ -634,9 +634,9 @@ const changeBookingStatus = gql`
     }
 `;
 
-const getBookinsByUser = gql`
-    query getBookinsByUser($filters: BookingsByUserFilters){
-        getBookinsByUser(filters: $filters){
+const getbookingsByUser = gql`
+    query getbookingsByUser($filters: BookingsByUserFilters){
+        getbookingsByUser(filters: $filters){
             date
             id
             totalDuration
@@ -870,9 +870,9 @@ const getQuickAvailableTimes = gql`
     }
 `;
 
-const getCombos = gql`
-    query getCombos($segmentType: ShopSegment!, $filter: FilterCombosInput) {
-        getCombos(segmentType: $segmentType, filter:$filter){
+const getCombosWithPrices = gql`
+    query getCombosWithPrices($segmentType: ShopSegment!, $filter: FilterCombosWithPricesInput!) {
+        getCombosWithPrices(segmentType: $segmentType, filter:$filter){
             id
             name
             order
@@ -1836,11 +1836,11 @@ exports.loadAvailableTimes = function (token,bookingClientInput) {
     });
 };
 
-exports.loadGetCombos = function (token,segmentType) {
+exports.loadGetCombos = function (token,segmentType,filter) {
     return new Promise(function(resolve, reject) {
         client.query({
             fetchPolicy: fetchPolicy,
-            query:getCombos,
+            query:getCombosWithPrices,
             context: {
                 headers: {
                     authorization: token ? `Bearer ${token}` : "",
@@ -1848,13 +1848,11 @@ exports.loadGetCombos = function (token,segmentType) {
             },
             variables: {
                 segmentType: segmentType,
-                filter: {
-                    showOnChatbot: true
-                }
+                filter: filter
             }
         }).then(result => {
             console.error(result);
-            resolve(result.data.getCombos);
+            resolve(result.data.getCombosWithPrices);
         })
             .catch(error => {
                 console.error('error',error);
@@ -1932,11 +1930,11 @@ exports.getEmployees = function (token) {
     });
 };
 
-exports.getBookinsByUser = function (token,filters) {
+exports.getbookingsByUser = function (token,filters) {
     return new Promise(function(resolve, reject) {
         client.query({
             fetchPolicy: fetchPolicy,
-            query:getBookinsByUser,
+            query:getbookingsByUser,
             context: {
                 headers: {
                     authorization: token ? `Bearer ${token}` : "",
@@ -1946,7 +1944,7 @@ exports.getBookinsByUser = function (token,filters) {
                 filters: filters
             }
         }).then(result => {
-            resolve(result.data.getBookinsByUser);
+            resolve(result.data.getbookingsByUser);
         })
             .catch(error => {
                 console.error('error',error);
@@ -2160,3 +2158,4 @@ exports.createPetPlan = function (token,petPlanInput) {
             });
     });
 };
+
