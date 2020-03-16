@@ -420,7 +420,104 @@ const changeChatbotNotification = gql`
 const removeBooking = gql`
     mutation removeBooking ($bookingId: ID!, $employee: ID!){
         removeBooking(bookingId: $bookingId, employee: $employee){
-            success
+            date
+            id
+            totalDuration
+            observation
+            discount
+            totalPrice
+            entryTime
+            leaveTime
+            client{
+                id
+                name
+                email
+                phoneNumber
+                cpf
+                birth
+                address {
+                    street
+                    number
+                    zipCode
+                    complement
+                    neighborhood
+                    city
+                    uf
+                }
+                pets{
+                    id
+                    name
+                    specie
+                    hair
+                    size
+                    observation
+                    breed {
+                        id
+                        name
+                        specie
+                        hair
+                        size
+                        notAccepted
+                        icon
+                    }
+                    genre
+                }
+                facebookId
+            }
+            pets {
+                id
+                name
+                specie
+                hair
+                size
+                observation
+                breed{
+                    id
+                    name
+                    specie
+                    hair
+                    size
+                    notAccepted
+                    icon
+                }
+                genre
+            }
+            services {
+                id
+                name
+                price
+            }
+            status
+            premise
+            entryHour
+            takeAndBring
+            bookingsTrackings{
+                checklists{
+                    checkListItemId
+                    value
+                    name
+                }
+                status
+            }
+            invoice{
+                takeAndBringValue
+                discount
+                discounts{
+                    discountPercent
+                    discountValue
+                    name
+                }
+                totalDiscount
+                totalPrice
+                services {
+                    serviceName
+                    petName
+                    price
+                }
+            }
+            cage
+            segmentType
+            scheduledByBot
         }
     }
 `;
@@ -634,9 +731,9 @@ const changeBookingStatus = gql`
     }
 `;
 
-const getbookingsByUser = gql`
-    query getbookingsByUser($filters: BookingsByUserFilters){
-        getbookingsByUser(filters: $filters){
+const getBookingsByUser = gql`
+    query getBookingsByUser($filters: BookingsByUserFilters){
+        getBookingsByUser(filters: $filters){
             date
             id
             totalDuration
@@ -1930,11 +2027,11 @@ exports.getEmployees = function (token) {
     });
 };
 
-exports.getbookingsByUser = function (token,filters) {
+exports.getBookingsByUser = function (token,filters) {
     return new Promise(function(resolve, reject) {
         client.query({
             fetchPolicy: fetchPolicy,
-            query:getbookingsByUser,
+            query:getBookingsByUser,
             context: {
                 headers: {
                     authorization: token ? `Bearer ${token}` : "",
@@ -1944,7 +2041,7 @@ exports.getbookingsByUser = function (token,filters) {
                 filters: filters
             }
         }).then(result => {
-            resolve(result.data.getbookingsByUser);
+            resolve(result.data.getBookingsByUser);
         })
             .catch(error => {
                 console.error('error',error);
