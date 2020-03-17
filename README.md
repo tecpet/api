@@ -1,4 +1,4 @@
-![tecpet-api](https://img.shields.io/badge/npm%20package-1.0.29-brightgreen.svg)
+![tecpet-api](https://img.shields.io/badge/npm%20package-1.0.32-brightgreen.svg)
 
 # tecpet-api
 API calls and usage description for the tecpet platform
@@ -97,9 +97,15 @@ The complete list for params and types can be found at https://dev.tec.pet/graph
 
         api.loadClientByFacebookId(token,facebookID).then(result => {console.log(result)}); 
         
-14. Get combos of services for segment
+14. Get combos of services for segment and pet info
 
-        api.loadGetCombos(token,segmentType).then(result => {console.log(result)}); 
+        const filter = {
+            specie: 'DOG',
+            hair: 'SHORT',
+            size: 'SMALL'
+        };
+        
+        api.loadGetCombos(token,'PET_SHOP',filter).then(result => {console.log(result)}).catch(e => console.log(e));
         
 15. Get available times for booking services
 
