@@ -1,11 +1,79 @@
+const onError  =  require('apollo-link-error').onError;
+const ApolloLink = require('apollo-link');
 const gql = require('graphql-tag');
 const ApolloClient = require('apollo-boost').ApolloClient;
 const fetch = require('cross-fetch');
-const createHttpLink = require('apollo-link-http').createHttpLink;
+const HttpLink = require('apollo-link-http').HttpLink;
 const InMemoryCache = require('apollo-cache-inmemory').InMemoryCache;
 const setContext = require('apollo-link-context').setContext;
 const cep = require('cep-promise');
 const BASE_URL = process.env.API_URL || 'https://dev.tec.pet';
+
+function json(response) {
+    return response.json()
+}
+
+exports.login = function (user,password) {
+//function login(user,password) {
+    return new Promise(function(resolve, reject) {
+        fetch(BASE_URL + '/auth/login', {
+            method: "POST",
+            body: JSON.stringify({"login": user, "password": password}),
+            headers: {
+                "Content-Type": "application/json"
+            },
+        }).then(json)
+            .then(function (data) {
+                if(data.status && data.status == 401){
+                    reject(data);
+                }
+                resolve(data);
+            })
+            .catch(function (error) {
+                // console.log('Request failed', error);
+                reject(error);
+            });
+    });
+};
+
+const fetchPolicy = 'no-cache';
+
+// const errorPolicy = 'all';
+const errorPolicy = undefined;
+
+
+// const httpLink = createHttpLink({
+//     uri: BASE_URL + '/graphql/',
+//     fetch: fetch
+// });
+
+
+const httpLink = ApolloLink.from([
+    new HttpLink({  uri: BASE_URL + '/graphql/', fetch: fetch })
+]);
+
+const errorLink = onError(({ graphQLErrors, networkError }) => {
+    if (graphQLErrors)
+        graphQLErrors.map(({ message, locations, path }) =>
+            console.log(
+                '\x1b[31m%s\x1b[0m',`[GraphQL error]: Message: ${message}, Location: ${locations}, Path: ${path}`,
+            ),
+        );
+
+    if (networkError) console.log('\x1b[31m%s\x1b[0m',`[Network error]: ${networkError}`);
+});
+
+
+
+const link = ApolloLink.concat(errorLink,httpLink);
+
+const client = new ApolloClient({
+    link: link,
+    cache: new InMemoryCache()
+});
+
+
+
 
 
 const createPetPlan = gql`
@@ -1007,6 +1075,46 @@ const getCombosWithPrices = gql`
     }
 `;
 
+const getCombos = gql`
+    query getCombos($segmentType: ShopSegment!, $filter: FilterCombosInput!) {
+        getCombos(segmentType: $segmentType, filter:$filter){
+            id
+            name
+            order
+            showOnChatbot
+            priceTable{
+                duration
+                hairItemType
+                sizeItemType
+                price
+                priceHardInserted
+            }
+            services {
+                id
+                name
+                priceTable{
+                    price
+                    duration
+                    hairItemType
+                    sizeItemType
+                    priceHardInserted
+                }
+                species{
+                    CAT
+                    DOG
+                }
+                segmentType
+                serviceCategoryType
+            }
+            discount
+            species{
+                CAT
+                DOG
+            }
+        }
+    }
+`;
+
 const getAvailableTimes = gql`
     query getAvailableTimes($bookingClientInput: BookingClientInput!){
         getAvailableTimes(bookingClientInput:$bookingClientInput){
@@ -1508,51 +1616,11 @@ const getSegments = gql`
     }
 `;
 
-
-function json(response) {
-    return response.json()
-}
-
-exports.login = function (user,password) {
-//function login(user,password) {
-    return new Promise(function(resolve, reject) {
-        fetch(BASE_URL + '/auth/login', {
-            method: "POST",
-            body: JSON.stringify({"login": user, "password": password}),
-            headers: {
-                "Content-Type": "application/json"
-            },
-        }).then(json)
-            .then(function (data) {
-                if(data.status && data.status == 401){
-                    reject(data);
-                }
-                resolve(data);
-            })
-            .catch(function (error) {
-                // console.log('Request failed', error);
-                reject(error);
-            });
-    });
-};
-
-const fetchPolicy = 'no-cache';
-
-const httpLink = createHttpLink({
-    uri: BASE_URL + '/graphql/',
-    fetch: fetch
-});
-
-
-const client = new ApolloClient({
-    link: httpLink,
-    cache: new InMemoryCache()
-});
-
 exports.getSegments = function (token) {
     return new Promise(function(resolve, reject) {
         client.query({
             fetchPolicy: fetchPolicy,
+            errorPolicy: errorPolicy,
             query:getSegments,
             context: {
                 headers: {
@@ -1561,7 +1629,7 @@ exports.getSegments = function (token) {
             }
         })
             .then(result => {
-                console.log(result.data.getSegments);
+                // console.log(result.data.getSegments);
                 resolve(result.data.getSegments);
             })
             .catch(error => {
@@ -1574,6 +1642,7 @@ exports.loadShopGeneralInfo = function (token) {
     return new Promise(function(resolve, reject) {
         client.query({
             fetchPolicy: fetchPolicy,
+            errorPolicy: errorPolicy,
             query:getShopGeneralInfo,
             context: {
                 headers: {
@@ -1597,6 +1666,7 @@ exports.loadTimeTables = function (token,segmentType) {
     return new Promise(function(resolve, reject) {
         client.query({
             fetchPolicy: fetchPolicy,
+            errorPolicy: errorPolicy,
             query:getTimeTable,
             context: {
                 headers: {
@@ -1623,6 +1693,7 @@ exports.loadCategoriesWithServices = function (token,segmentType) {
     return new Promise(function(resolve, reject) {
         client.query({
             fetchPolicy: fetchPolicy,
+            errorPolicy: errorPolicy,
             query:getServiceCategoriesWithServices,
             context: {
                 headers: {
@@ -1651,6 +1722,7 @@ exports.loadChecklists = function (token,segmentType) {
     return new Promise(function(resolve, reject) {
         client.query({
             fetchPolicy: fetchPolicy,
+            errorPolicy: errorPolicy,
             query:getChecklists,
             context: {
                 headers: {
@@ -1676,6 +1748,7 @@ exports.loadBillingMethods = function (token,segmentType) {
     return new Promise(function(resolve, reject) {
         client.query({
             fetchPolicy: fetchPolicy,
+            errorPolicy: errorPolicy,
             query:getBillingMethods,
             context: {
                 headers: {
@@ -1690,7 +1763,7 @@ exports.loadBillingMethods = function (token,segmentType) {
             resolve(result.data.getBillingMethods);
         })
             .catch(error => {
-                console.error('error',error);
+                // console.error('error',error);
                 reject(error);
             });
     });
@@ -1738,7 +1811,7 @@ exports.createClient = function (token,clientInput) {
             resolve(result.data.createClient);
         })
             .catch(error => {
-                console.error('error',error);
+                // console.error('error',error);
                 reject(error);
             });
     });
@@ -1761,7 +1834,7 @@ exports.editClient = function (token,id,clientInput) {
             resolve(result.data.editClient);
         })
             .catch(error => {
-                console.error('error',error);
+                // console.error('error',error);
                 reject(error);
             });
     });
@@ -1785,7 +1858,7 @@ exports.createPet = function (token,clientID,petInput) {
             resolve(result.data.createPet);
         })
             .catch(error => {
-                console.error('error',error);
+                // console.error('error',error);
                 reject(error);
             });
     });
@@ -1810,7 +1883,7 @@ exports.editPet = function (token,id,clientID,petInput) {
             resolve(result.data.createPet);
         })
             .catch(error => {
-                console.error('error',error);
+                // console.error('error',error);
                 reject(error);
             });
     });
@@ -1820,6 +1893,7 @@ exports.loadNotAcceptedBreeds = function (token,specie) {
     return new Promise(function(resolve, reject) {
         client.query({
             fetchPolicy: fetchPolicy,
+            errorPolicy: errorPolicy,
             query:getNotAcceptedBreeds,
             context: {
                 headers: {
@@ -1834,7 +1908,7 @@ exports.loadNotAcceptedBreeds = function (token,specie) {
             resolve(result.data.getNotAcceptedBreeds);
         })
             .catch(error => {
-                console.error('error',error);
+                // console.error('error',error);
                 reject(error);
             });
     });
@@ -1844,6 +1918,7 @@ exports.loadClients= function (token) {
     return new Promise(function(resolve, reject) {
         client.query({
             fetchPolicy: fetchPolicy,
+            errorPolicy: errorPolicy,
             query:getClients,
             context: {
                 headers: {
@@ -1855,7 +1930,7 @@ exports.loadClients= function (token) {
             resolve(result.data.getClients);
         })
             .catch(error => {
-                console.error('error',error);
+                // console.error('error',error);
                 reject(error);
             });
     });
@@ -1865,6 +1940,7 @@ exports.loadClientById= function (token,clientID) {
     return new Promise(function(resolve, reject) {
         client.query({
             fetchPolicy: fetchPolicy,
+            errorPolicy: errorPolicy,
             query:getClientById,
             context: {
                 headers: {
@@ -1879,7 +1955,7 @@ exports.loadClientById= function (token,clientID) {
             resolve(result.data.client);
         })
             .catch(error => {
-                console.error('error',error);
+                // console.error('error',error);
                 reject(error);
             });
     });
@@ -1889,6 +1965,7 @@ exports.loadClientByFacebookId = function (token,facebookId) {
     return new Promise(function(resolve, reject) {
         client.query({
             fetchPolicy: fetchPolicy,
+            errorPolicy: errorPolicy,
             query:clientByFacebookId,
             context: {
                 headers: {
@@ -1903,7 +1980,7 @@ exports.loadClientByFacebookId = function (token,facebookId) {
             resolve(result.data.clientByFacebookId);
         })
             .catch(error => {
-                console.error('error',error);
+                // console.error('error',error);
                 reject(error);
             });
     });
@@ -1914,6 +1991,7 @@ exports.loadAvailableTimes = function (token,bookingClientInput) {
     return new Promise(function(resolve, reject) {
         client.query({
             fetchPolicy: fetchPolicy,
+            errorPolicy: errorPolicy,
             query:getAvailableTimes,
             context: {
                 headers: {
@@ -1927,7 +2005,7 @@ exports.loadAvailableTimes = function (token,bookingClientInput) {
             resolve(result.data.getAvailableTimes);
         })
             .catch(error => {
-                console.error('error',error);
+                // console.error('error',error);
                 reject(error);
             });
     });
@@ -1937,6 +2015,34 @@ exports.loadGetCombos = function (token,segmentType,filter) {
     return new Promise(function(resolve, reject) {
         client.query({
             fetchPolicy: fetchPolicy,
+            errorPolicy: errorPolicy,
+            query:getCombos,
+            context: {
+                headers: {
+                    authorization: token ? `Bearer ${token}` : "",
+                }
+            },
+            variables: {
+                segmentType: segmentType,
+                filter: filter
+            }
+        }).then(result => {
+            // console.error(result);
+            resolve(result.data.getCombos);
+        })
+            .catch(error => {
+                // console.error('error',error);
+                reject(error);
+            });
+    });
+};
+
+
+exports.loadGetCombosWithPrices = function (token,segmentType,filter) {
+    return new Promise(function(resolve, reject) {
+        client.query({
+            fetchPolicy: fetchPolicy,
+            errorPolicy: errorPolicy,
             query:getCombosWithPrices,
             context: {
                 headers: {
@@ -1948,11 +2054,11 @@ exports.loadGetCombos = function (token,segmentType,filter) {
                 filter: filter
             }
         }).then(result => {
-            console.error(result);
+            // console.error(result);
             resolve(result.data.getCombosWithPrices);
         })
             .catch(error => {
-                console.error('error',error);
+                // console.error('error',error);
                 reject(error);
             });
     });
@@ -1963,6 +2069,7 @@ exports.loadQuickAvailableTimes = function (token,bookingQuickClientInput) {
     return new Promise(function(resolve, reject) {
         client.query({
             fetchPolicy: fetchPolicy,
+            errorPolicy: errorPolicy,
             query:getQuickAvailableTimes,
             context: {
                 headers: {
@@ -1976,7 +2083,7 @@ exports.loadQuickAvailableTimes = function (token,bookingQuickClientInput) {
             resolve(result.data.getQuickAvailableTimes);
         })
             .catch(error => {
-                console.error('error',error);
+                // console.error('error',error);
                 reject(error);
             });
     });
@@ -2001,7 +2108,7 @@ exports.createBooking = function (token, timeId, bookingInput, checklist, employ
             resolve(result.data.createBooking);
         })
             .catch(error => {
-                console.error('error',error);
+                // console.error('error',error);
                 reject(error);
             });
     });
@@ -2011,6 +2118,7 @@ exports.getEmployees = function (token) {
     return new Promise(function(resolve, reject) {
         client.query({
             fetchPolicy: fetchPolicy,
+            errorPolicy: errorPolicy,
             query:getEmployees,
             context: {
                 headers: {
@@ -2021,7 +2129,7 @@ exports.getEmployees = function (token) {
             resolve(result.data.getEmployees);
         })
             .catch(error => {
-                console.error('error',error);
+                // console.error('error',error);
                 reject(error);
             });
     });
@@ -2031,6 +2139,7 @@ exports.getBookingsByUser = function (token,filters) {
     return new Promise(function(resolve, reject) {
         client.query({
             fetchPolicy: fetchPolicy,
+            errorPolicy: errorPolicy,
             query:getBookingsByUser,
             context: {
                 headers: {
@@ -2044,7 +2153,7 @@ exports.getBookingsByUser = function (token,filters) {
             resolve(result.data.getBookingsByUser);
         })
             .catch(error => {
-                console.error('error',error);
+                // console.error('error',error);
                 reject(error);
             });
     });
@@ -2054,6 +2163,7 @@ exports.changeBookingDate = function (token,bookingId,timeId,status,checklist,em
     return new Promise(function(resolve, reject) {
         client.mutate({
             fetchPolicy: fetchPolicy,
+            errorPolicy: errorPolicy,
             mutation:changeBookingDate,
             context: {
                 headers: {
@@ -2071,7 +2181,7 @@ exports.changeBookingDate = function (token,bookingId,timeId,status,checklist,em
             resolve(result.data.changeBookingDate);
         })
             .catch(error => {
-                console.error('error',error);
+                // console.error('error',error);
                 reject(error);
             });
     });
@@ -2081,6 +2191,7 @@ exports.changeBookingStatus = function (token,bookingId,status,checklist,employe
     return new Promise(function(resolve, reject) {
         client.mutate({
             fetchPolicy: fetchPolicy,
+            errorPolicy: errorPolicy,
             mutation:changeBookingStatus,
             context: {
                 headers: {
@@ -2098,7 +2209,7 @@ exports.changeBookingStatus = function (token,bookingId,status,checklist,employe
             resolve(result.data.changeBookingStatus);
         })
             .catch(error => {
-                console.error('error',error);
+                // console.error('error',error);
                 reject(error);
             });
     });
@@ -2109,6 +2220,7 @@ exports.removeBooking = function (token,bookingId,employee) {
     return new Promise(function(resolve, reject) {
         client.mutate({
             fetchPolicy: fetchPolicy,
+            errorPolicy: errorPolicy,
             mutation:removeBooking,
             context: {
                 headers: {
@@ -2123,7 +2235,7 @@ exports.removeBooking = function (token,bookingId,employee) {
             resolve(result.data.removeBooking);
         })
             .catch(error => {
-                console.error('error',error);
+                // console.error('error',error);
                 reject(error);
             });
     });
@@ -2133,6 +2245,7 @@ exports.changeChatbotNotification = function (token,id, chatbotNotificationInput
     return new Promise(function(resolve, reject) {
         client.mutate({
             fetchPolicy: fetchPolicy,
+            errorPolicy: errorPolicy,
             mutation:changeChatbotNotification,
             context: {
                 headers: {
@@ -2147,7 +2260,7 @@ exports.changeChatbotNotification = function (token,id, chatbotNotificationInput
             resolve(result.data.changeChatbotNotification);
         })
             .catch(error => {
-                console.error('error',error);
+                // console.error('error',error);
                 reject(error);
             });
     });
@@ -2157,6 +2270,7 @@ exports.findClients= function (token,value,type,page,qty){
     return new Promise(function(resolve, reject) {
         client.query({
             fetchPolicy: fetchPolicy,
+            errorPolicy: errorPolicy,
             query:findClient,
             context: {
                 headers: {
@@ -2174,7 +2288,7 @@ exports.findClients= function (token,value,type,page,qty){
             resolve(result.data.findClient);
         })
             .catch(error => {
-                console.error('error',error);
+                // console.error('error',error);
                 reject(error);
             });
     });
@@ -2185,6 +2299,7 @@ exports.getPetPlans= function (token,filter,page,qty){
     return new Promise(function(resolve, reject) {
         client.query({
             fetchPolicy: fetchPolicy,
+            errorPolicy: errorPolicy,
             query:getPetPlans,
             context: {
                 headers: {
@@ -2201,7 +2316,7 @@ exports.getPetPlans= function (token,filter,page,qty){
             resolve(result.data.getPetPlans);
         })
             .catch(error => {
-                console.error('error',error);
+                // console.error('error',error);
                 reject(error);
             });
     });
@@ -2212,6 +2327,7 @@ exports.getPlans = function (token){
     return new Promise(function(resolve, reject) {
         client.query({
             fetchPolicy: fetchPolicy,
+            errorPolicy: errorPolicy,
             query:getPlans,
             context: {
                 headers: {
@@ -2228,7 +2344,7 @@ exports.getPlans = function (token){
             resolve(result.data.getPetPlans);
         })
             .catch(error => {
-                console.error('error',error);
+                // console.error('error',error);
                 reject(error);
             });
     });
@@ -2250,7 +2366,7 @@ exports.createPetPlan = function (token,petPlanInput) {
             resolve(result.data.createClient);
         })
             .catch(error => {
-                console.error('error',error);
+                // console.error('error',error);
                 reject(error);
             });
     });
